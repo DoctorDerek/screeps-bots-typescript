@@ -24,6 +24,10 @@ export const actionDeposit = (creep: Creep) => {
     for (const adjacent of adjacentCreeps) {
       if (adjacent.creep.memory.state === "FILL UP") {
         const transferResult = creep.transfer(adjacent.creep, RESOURCE_ENERGY)
+        // STATE TRANSITION for adjacent creep: FILL UP --> DEPOSIT
+        adjacent.creep.memory.state = "DEPOSIT"
+        // STATE TRANSITION: DEPOSIT --> FILL UP
+        creep.memory.state = "FILL UP"
       }
     }
   }
