@@ -8,8 +8,9 @@ export const roleBuilder = {
       creep.say("🚶 FILL UP")
       creep.memory.state = "FILL UP"
     }
-    if (creep.memory.state === "FILL UP") {
+    if (creep.memory.state === "FILL UP" || creep.memory.state === "DEPOSIT") {
       // Go harvest active resources
+      // DEPOSIT means we got a transfer
       actionFillUp(creep)
       if (creep.store.getUsedCapacity() / creep.store.getCapacity() > 0.9) {
         creep.say("🚶 BUILD")

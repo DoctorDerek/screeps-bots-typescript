@@ -6,7 +6,8 @@ export const roleUpgrader = {
       creep.say("🚶 FILL UP")
       creep.memory.state = "FILL UP"
     }
-    if (creep.memory.state === "FILL UP") {
+    if (creep.memory.state === "FILL UP" || creep.memory.state === "DEPOSIT") {
+      // DEPOSIT means we got a transfer
       // Go harvest active resources
       actionFillUp(creep)
       if (creep.store.getUsedCapacity() / creep.store.getCapacity() > 0.9) {
