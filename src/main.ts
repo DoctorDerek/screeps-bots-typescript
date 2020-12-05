@@ -176,7 +176,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
         spawnResult = spawnCreep("Builder")
       } else if (creepsPerRoom > 5 && creepCounts.Eye < creepsPerRoom) {
         spawnResult = spawnCreep("Eye")
-      } else if (creepsPerRoom > 10 && creepCounts.Defender < creepsPerRoom) {
+      } // else if (creepsPerRoom > 10 && creepCounts.Defender < creepsPerRoom)
+      else {
         spawnResult = spawnCreep("Defender")
       }
       // TODO: Defense against creep invasion
