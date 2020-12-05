@@ -144,7 +144,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
         if (spawnResult !== undefined) {
           console.log(`Game.spawns.Spawn1 had spawn result ${spawnResult}`)
         }
-        creepsPerRoom += mineablePositionsCount / roomCount
+        //creepsPerRoom += mineablePositionsCount / roomCount
+        creepsPerRoom += 1 // fix?
         // This is the average mineablePositions from rooms that we have vision in
 
         creepCounts.Miner += creepCounts.miniMiner
@@ -184,52 +185,52 @@ export const loop = ErrorMapper.wrapLoop(() => {
         // TODO: Defense against creep invasion
         // else if (creepCounts.Defender < 3) {      spawnCreep("Defender")    }
       }
-      console.log(
-        `🧠 creepsPerRoom is ${Math.ceil(
-          creepsPerRoom
-        )} of ${mineablePositionsCount} mineable positions in ${
-          Array.from(Object.entries(Game.rooms)).length
-        } visible rooms`
-      )
     }
+    console.log(
+      `🧠 creepsPerRoom is ${Math.ceil(
+        creepsPerRoom
+      )} of ${mineablePositionsCount} mineable positions in ${
+        Array.from(Object.entries(Game.rooms)).length
+      } visible rooms`
+    )
+  }
 
-    // Run all creeps
-    for (const creepName in Game.creeps) {
-      const creep = Game.creeps[creepName]
-      const creepRole = creep.memory.role
-      try {
-        if (creep.spawning === false) {
-          switch (creepRole) {
-            case "Miner":
-            // no break
-            case "MiniMiner":
-              roleMiner.run(creep)
-              break
-            case "Taxi":
-            // no break
-            case "MiniTaxi":
-              roleTaxi.run(creep)
-              break
-            case "Upgrader":
-              roleUpgrader.run(creep)
-              break
-            case "Builder":
-              roleBuilder.run(creep)
-              break
-            case "Defender":
-              roleDefender.run(creep)
-              break
-            case "Eye":
-              roleEye.run(creep)
-              break
-            default:
-              console.log(`Unknown creep role: ${creep.memory.role}`)
-              break
-          }
+  // Run all creeps
+  for (const creepName in Game.creeps) {
+    const creep = Game.creeps[creepName]
+    const creepRole = creep.memory.role
+    try {
+      if (creep.spawning === false) {
+        switch (creepRole) {
+          case "Miner":
+          // no break
+          case "MiniMiner":
+            roleMiner.run(creep)
+            break
+          case "Taxi":
+          // no break
+          case "MiniTaxi":
+            roleTaxi.run(creep)
+            break
+          case "Upgrader":
+            roleUpgrader.run(creep)
+            break
+          case "Builder":
+            roleBuilder.run(creep)
+            break
+          case "Defender":
+            roleDefender.run(creep)
+            break
+          case "Eye":
+            roleEye.run(creep)
+            break
+          default:
+            console.log(`Unknown creep role: ${creep.memory.role}`)
+            break
         }
-      } catch (e) {
-        console.log(`${creepName} of role ${creepRole} threw a ${e}`)
       }
+    } catch (e) {
+      console.log(`${creepName} of role ${creepRole} threw a ${e}`)
     }
   }
 })
