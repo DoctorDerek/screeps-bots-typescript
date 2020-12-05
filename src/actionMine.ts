@@ -48,6 +48,7 @@ export const actionMine = (creep: Creep) => {
         creep.memory.destination.y
       )
       if (
+        // TODO Make sure this works correctly
         creepsAtDestination.length > 0 &&
         creepsAtDestination[0].name !== creep.memory.taxiDriver
       ) {

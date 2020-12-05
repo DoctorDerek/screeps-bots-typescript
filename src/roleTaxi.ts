@@ -17,7 +17,7 @@ export const assignTaxis = (taxi: Creep) => {
   // but for other rooms we need Game.map.getRoomLinearDistance() * 50
   const rangeBetweenCreepsMultiRoom = (a: Creep, b: Creep) =>
     a.room.name === b.room.name
-      ? a.pos.getRangeTo(b)
+      ? a.pos.getRangeTo(b.pos)
       : 50 * Game.map.getRoomLinearDistance(a.room.name, b.room.name)
   // Sort those creeps by closest creep to this taxi
   // Sort by closest creep across multiple rooms
