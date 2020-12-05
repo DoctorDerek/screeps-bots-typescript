@@ -3,7 +3,7 @@ import { lookForAtAreaWithOffset } from "helper_functions"
 
 export const dropIt = (creep: Creep, why: string = "") => {
   console.log(`${creep.name} says, "Drop it!${why && " " + why}"`)
-  creep.say("💧DROP IT💧")
+  creep.say("💧DROP🩸")
   // There's an issue, so let's drop our resources and mosey on
   creep.drop(RESOURCE_ENERGY)
 }
