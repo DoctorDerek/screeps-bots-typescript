@@ -32,11 +32,11 @@ export const assignTaxis = (taxi: Creep) => {
     if (!Game.creeps[creepNeedingTow.memory.taxiDriver]) {
       // if the assigned taxidriver has died, clear the memory
       creepNeedingTow.memory.taxiDriver = ""
-    }
-    if (
+    } else if (
       creepNeedingTow.memory.taxiDriver &&
-      Game.creeps[creepNeedingTow.memory.taxiDriver]
+      taxi.name !== creepNeedingTow.memory.taxiDriver
     ) {
+      // this creep has an assigned driver in memory that isn't this taxi
       const otherTaxi = Game.creeps[creepNeedingTow.memory.taxiDriver]
       DEBUG &&
         console.log(
@@ -72,8 +72,6 @@ export const assignTaxis = (taxi: Creep) => {
         // Turn the taxi light off because we have a job
         taxi.memory.taxiDriver = taxi.name
       }
-      // This taxi should signal it's not available by saving
-      // its own name to its memory for taxiDriver
     }
   }
 }
