@@ -90,10 +90,10 @@ export const getMineablePositions = (room: Room) => {
     const creepsLookArray = room.lookForAtArea(
       // lookForAtArea(type, top, left, bottom, right, [asArray])
       LOOK_CREEPS,
-      lookTop
-      lookLeft
-      lookBottom
-      lookRight
+      lookTop,
+      lookLeft,
+      lookBottom,
+      lookRight,
       true // asArray
     )
 
