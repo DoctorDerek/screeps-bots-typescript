@@ -70,7 +70,7 @@ export const actionDeposit = (creep: Creep) => {
     const terrain = new Room.Terrain(creep.room.name)
     if (
       terrain.get(creep.pos.x, creep.pos.y) === TERRAIN_MASK_SWAMP &&
-      creep.pos.lookFor("structure")[0].structureType === STRUCTURE_ROAD
+      creep.pos.lookFor("structure")[0].structureType !== STRUCTURE_ROAD
     ) {
       // Drop energy as we traverse swamps; we'll pick it up next turn
       dropIt(creep, "Swamp!")
