@@ -54,7 +54,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     Builder: [WORK, MOVE, CARRY, CARRY, CARRY], // 300
     Defender: [MOVE, MOVE, ATTACK, ATTACK], // 260
     Eye: [MOVE], // 50
-    Taxi: [MOVE], // 50 // TODO increase MOVE parts
+    Taxi: [MOVE, CARRY], // 100 // TODO increase MOVE parts
   }
   const creepCounts: { [role: string]: number } = {}
   for (const role of creepRoles) {
