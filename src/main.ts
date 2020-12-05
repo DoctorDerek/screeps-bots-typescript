@@ -136,99 +136,100 @@ export const loop = ErrorMapper.wrapLoop(() => {
     const roomCount = visibleRooms.length
     let creepsPerRoom = 0
     let spawnResult // we set this when we actually attempt a spawn
-    /*while (creepsPerRoom < mineablePositionsCount) {
+    while (creepsPerRoom < mineablePositionsCount) {
       if (spawnResult === OK || spawnResult === ERR_NOT_ENOUGH_ENERGY) {
         break
-      }*/
-    {
-      if (spawnResult !== undefined) {
-        console.log(`Game.spawns.Spawn1 had spawn result ${spawnResult}`)
       }
-      creepsPerRoom += mineablePositionsCount / roomCount
-      // This is the average mineablePositions from rooms that we have vision in
-
-      creepCounts.Miner += creepCounts.miniMiner
-      creepCounts.Taxi += creepCounts.miniTaxi
-      if (creepCounts.Miner === 0) {
-        // Brand new room, spawn mini creeps instead
-        spawnResult = spawnCreep("MiniMiner")
-      } else if (creepCounts.Taxi === 0) {
-        // Always spawn an Upgrader when we have at least one Miner
-        spawnResult = spawnCreep("MiniTaxi")
-      } else if (creepCounts.Upgrader < 1 && creepCounts.Miner > 0) {
-        // Always spawn an Upgrader when we have at least one Miner
-        spawnResult = spawnCreep("Upgrader")
-      } else if (creepCounts.Taxi < creepCounts.Miner) {
-        spawnResult = spawnCreep("Taxi")
-      } else if (
-        creepCounts.Miner < creepsPerRoom * 2 &&
-        creepCounts.Miner < mineablePositionsCount
-      ) {
-        // spawn twice as many miners as we should per-room
-        // until we hit mineable positions (the max miners)
-        spawnResult = spawnCreep("Miner")
-      } else if (creepCounts.Taxi < creepsPerRoom) {
-        spawnResult = spawnCreep("Taxi")
-      } else if (creepCounts.Upgrader < creepsPerRoom) {
-        spawnResult = spawnCreep("Upgrader")
-      } else if (
-        creepCounts.Builder < creepsPerRoom &&
-        constructionSiteCount > 0
-      ) {
-        spawnResult = spawnCreep("Builder")
-      } else if (creepCounts.Eye < creepsPerRoom) {
-        spawnResult = spawnCreep("Eye")
-      } else if (creepsPerRoom > 10 && creepCounts.Defender < creepsPerRoom) {
-        spawnResult = spawnCreep("Defender")
-      }
-      // TODO: Defense against creep invasion
-      // else if (creepCounts.Defender < 3) {      spawnCreep("Defender")    }
-    }
-    console.log(
-      `🧠 creepsPerRoom is ${Math.ceil(
-        creepsPerRoom
-      )} of ${mineablePositionsCount} mineable positions in ${
-        Array.from(Object.entries(Game.rooms)).length
-      } visible rooms`
-    )
-  }
-
-  // Run all creeps
-  for (const creepName in Game.creeps) {
-    const creep = Game.creeps[creepName]
-    const creepRole = creep.memory.role
-    try {
-      if (creep.spawning === false) {
-        switch (creepRole) {
-          case "Miner":
-          // no break
-          case "MiniMiner":
-            roleMiner.run(creep)
-            break
-          case "Taxi":
-          // no break
-          case "MiniTaxi":
-            roleTaxi.run(creep)
-            break
-          case "Upgrader":
-            roleUpgrader.run(creep)
-            break
-          case "Builder":
-            roleBuilder.run(creep)
-            break
-          case "Defender":
-            roleDefender.run(creep)
-            break
-          case "Eye":
-            roleEye.run(creep)
-            break
-          default:
-            console.log(`Unknown creep role: ${creep.memory.role}`)
-            break
+      {
+        if (spawnResult !== undefined) {
+          console.log(`Game.spawns.Spawn1 had spawn result ${spawnResult}`)
         }
+        creepsPerRoom += mineablePositionsCount / roomCount
+        // This is the average mineablePositions from rooms that we have vision in
+
+        creepCounts.Miner += creepCounts.miniMiner
+        creepCounts.Taxi += creepCounts.miniTaxi
+        if (creepCounts.Miner === 0) {
+          // Brand new room, spawn mini creeps instead
+          spawnResult = spawnCreep("MiniMiner")
+        } else if (creepCounts.Taxi === 0) {
+          // Always spawn an Upgrader when we have at least one Miner
+          spawnResult = spawnCreep("MiniTaxi")
+        } else if (creepCounts.Upgrader < 1 && creepCounts.Miner > 0) {
+          // Always spawn an Upgrader when we have at least one Miner
+          spawnResult = spawnCreep("Upgrader")
+        } else if (creepCounts.Taxi < creepCounts.Miner) {
+          spawnResult = spawnCreep("Taxi")
+        } else if (
+          creepCounts.Miner < creepsPerRoom * 2 &&
+          creepCounts.Miner < mineablePositionsCount
+        ) {
+          // spawn twice as many miners as we should per-room
+          // until we hit mineable positions (the max miners)
+          spawnResult = spawnCreep("Miner")
+        } else if (creepCounts.Taxi < creepsPerRoom) {
+          spawnResult = spawnCreep("Taxi")
+        } else if (creepCounts.Upgrader < creepsPerRoom) {
+          spawnResult = spawnCreep("Upgrader")
+        } else if (
+          creepCounts.Builder < creepsPerRoom &&
+          constructionSiteCount > 0
+        ) {
+          spawnResult = spawnCreep("Builder")
+        } else if (creepCounts.Eye < creepsPerRoom) {
+          spawnResult = spawnCreep("Eye")
+        } else if (creepsPerRoom > 10 && creepCounts.Defender < creepsPerRoom) {
+          spawnResult = spawnCreep("Defender")
+        }
+        // TODO: Defense against creep invasion
+        // else if (creepCounts.Defender < 3) {      spawnCreep("Defender")    }
       }
-    } catch (e) {
-      console.log(`${creepName} of role ${creepRole} threw a ${e}`)
+      console.log(
+        `🧠 creepsPerRoom is ${Math.ceil(
+          creepsPerRoom
+        )} of ${mineablePositionsCount} mineable positions in ${
+          Array.from(Object.entries(Game.rooms)).length
+        } visible rooms`
+      )
+    }
+
+    // Run all creeps
+    for (const creepName in Game.creeps) {
+      const creep = Game.creeps[creepName]
+      const creepRole = creep.memory.role
+      try {
+        if (creep.spawning === false) {
+          switch (creepRole) {
+            case "Miner":
+            // no break
+            case "MiniMiner":
+              roleMiner.run(creep)
+              break
+            case "Taxi":
+            // no break
+            case "MiniTaxi":
+              roleTaxi.run(creep)
+              break
+            case "Upgrader":
+              roleUpgrader.run(creep)
+              break
+            case "Builder":
+              roleBuilder.run(creep)
+              break
+            case "Defender":
+              roleDefender.run(creep)
+              break
+            case "Eye":
+              roleEye.run(creep)
+              break
+            default:
+              console.log(`Unknown creep role: ${creep.memory.role}`)
+              break
+          }
+        }
+      } catch (e) {
+        console.log(`${creepName} of role ${creepRole} threw a ${e}`)
+      }
     }
   }
 })
