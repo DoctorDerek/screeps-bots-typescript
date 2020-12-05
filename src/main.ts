@@ -147,10 +147,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
       creepsPerRoom += mineablePositionsCount / roomCount
       // This is the average mineablePositions from rooms that we have vision in
 
-      if (creepCounts.Miner === 0 && creepCounts.MiniMiner === 0) {
+      creepCounts.Miner += creepCounts.miniMiner
+      creepCounts.Taxi += creepCounts.miniTaxi
+      if (creepCounts.Miner === 0) {
         // Brand new room, spawn mini creeps instead
         spawnResult = spawnCreep("MiniMiner")
-      } else if (creepCounts.Taxi === 0 && creepCounts.MiniTaxi === 0) {
+      } else if (creepCounts.Taxi === 0) {
         // Always spawn an Upgrader when we have at least one Miner
         spawnResult = spawnCreep("MiniTaxi")
       } else if (creepCounts.Upgrader < 1 && creepCounts.Miner > 0) {
