@@ -2,12 +2,19 @@ import { VISUALIZE_PATH_STYLE } from "./helper_functions/RANDOM_COLOR"
 
 export const dropIt = (creep: Creep, why: string = "") => {
   console.log(`${creep.name} says, "Drop it!${why && " " + why}"`)
-  creep.say("DROP IT!")
+  creep.say("💧DROP IT!🩸")
   // There's an issue, so let's drop our resources and mosey on
   creep.drop(RESOURCE_ENERGY)
 }
 
 export const actionDeposit = (creep: Creep) => {
+  const terrain = new Room.Terrain(creep.room.name)
+
+  if (terrain.get(creep.pos.x, creep.pos.y) === TERRAIN_MASK_SWAMP) {
+    // Drop energy as we traverse swamps; we'll pick it up next turn
+    dropIt(creep, "Swamp!")
+  }
+
   // Find a drop off site and move to it
   const targetDropOffSite = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
     filter: (structure) => {
