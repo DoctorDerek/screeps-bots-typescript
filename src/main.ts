@@ -153,7 +153,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       // Miner: WORK WORK -> WORK / WORK / WORK
       if (
         creepCounts.Taxi < creepCounts.Miner ||
-        creepCounts.miner === mineablePositionsCount
+        creepCounts.Miner >= mineablePositionsCount
       ) {
         // Brand new room, spawn mini creeps instead
         spawnResult = spawnCreep("Taxi")
