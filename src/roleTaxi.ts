@@ -3,7 +3,7 @@ import { actionDeposit } from "actionDeposit"
 
 export const assignTaxis = (taxi: Creep) => {
   // For each taxi: Find all creeps (in all rooms) who need a tow
-  const DEBUG = false
+  const DEBUG = true
   // find closest creep who needs a tow (no MOVE parts)
   const creepsNeedingTow = Array.from(Object.values(Game.creeps)).filter(
     (target: Creep) =>
@@ -27,15 +27,18 @@ export const assignTaxis = (taxi: Creep) => {
       rangeBetweenCreepsMultiRoom(taxi, b)
   )
 
+  console.log(`Creeps needing tow: ${creepsNeedingTow}`)
+
   // For each creep that needs a tow:
   for (const creepNeedingTow of creepsNeedingTow) {
-    if (!Game.creeps[creepNeedingTow.memory.taxiDriver]) {
-      // if the assigned taxidriver has died, clear the memory
-      creepNeedingTow.memory.taxiDriver = ""
-    } else if (
+    if (
       creepNeedingTow.memory.taxiDriver &&
       taxi.name !== creepNeedingTow.memory.taxiDriver
     ) {
+      if (!Game.creeps[creepNeedingTow.memory.taxiDriver]) {
+        // if the assigned taxidriver has died, clear the memory
+        creepNeedingTow.memory.taxiDriver = ""
+      }
       // this creep has an assigned driver in memory that isn't this taxi
       const otherTaxi = Game.creeps[creepNeedingTow.memory.taxiDriver]
       DEBUG &&
