@@ -156,6 +156,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
       } else if (creepCounts.Upgrader < 1 && creepCounts.Miner > 0) {
         // Always spawn an Upgrader when we have at least one Miner
         spawnResult = spawnCreep("Upgrader")
+      } else if (creepCounts.Taxi < creepCounts.Miner) {
+        spawnResult = spawnCreep("Taxi")
       } else if (
         creepCounts.Miner < creepsPerRoom * 2 &&
         creepCounts.Miner < mineablePositionsCount
