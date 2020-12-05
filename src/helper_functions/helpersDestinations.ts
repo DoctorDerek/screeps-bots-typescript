@@ -2,6 +2,8 @@
 // TODO: Move this to a helper function that gets reused in many creeps
 // Because it assigns them a destination in memory that is the closest
 
+// TODO: Fix this logic -- currently not checking for creeps already assigned to that destination
+
 import { getMineablePositionsInAllRoomsWithVision } from "./helpersMining"
 import {
   getAccessibleRoomNamesWithoutVision,
@@ -94,7 +96,7 @@ export const chooseDestination = (creep: Creep) => {
   }
 
   // TODO Assign fetchers to other rooms
-  if (creep.memory.role === "Fetchers") {
+  if (creep.memory.role === "Taxi") {
     const accessibleRoomNamesWithoutVision: Array<string> = getAccessibleRoomNamesWithoutVision(
       creep.room
     )
