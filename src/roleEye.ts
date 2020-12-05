@@ -1,3 +1,4 @@
+import { actionPatrol } from "actionPatrol"
 import {
   moveToDestination,
   getAccessibleRoomNamesWithoutVision,
@@ -91,9 +92,7 @@ export const roleEye = {
         creep.memory.state = "THINK"
       }
       // STATE ACTION: ASSIGN DESTINATION TO THE MIDDLE OF THIS ROOM
-      creep.memory.destination.x = 25
-      creep.memory.destination.y = 25
-      creep.memory.destination.roomName = creep.room.name
+      actionPatrol(creep)
     }
 
     // ALWAYS ACTION: MOVE TO THE DESTINATION
