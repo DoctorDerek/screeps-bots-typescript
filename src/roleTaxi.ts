@@ -31,10 +31,11 @@ export const assignTaxis = (taxi: Creep) => {
 
   // For each creep that needs a tow:
   for (const creepNeedingTow of creepsNeedingTow) {
-    if (
-      creepNeedingTow.memory.taxiDriver &&
-      taxi.name !== creepNeedingTow.memory.taxiDriver
-    ) {
+    if (creepNeedingTow.memory.taxiDriver) {
+      if (taxi.name === creepNeedingTow.memory.taxiDriver) {
+        // no need to mess with the creep if we're already assigned to it
+        continue
+      }
       if (!Game.creeps[creepNeedingTow.memory.taxiDriver]) {
         // if the assigned taxidriver has died, clear the memory
         creepNeedingTow.memory.taxiDriver = ""
