@@ -25,11 +25,18 @@ export const actionDeposit = (creep: Creep) => {
       if (adjacent.creep.memory.state === "FILL UP") {
         const transferResult = creep.transfer(adjacent.creep, RESOURCE_ENERGY)
         // STATE TRANSITION for adjacent creep: FILL UP --> DEPOSIT
-        adjacent.creep.memory.state = "DEPOSIT"
-        actionDeposit(creep)
+        if (
+          adjacent.creep.store.getUsedCapacity() >
+          adjacent.creep.store.getCapacity() * 0.9
+        ) {
+          adjacent.creep.memory.state = "DEPOSIT"
+          actionDeposit(creep)
+        }
         // STATE TRANSITION: DEPOSIT --> FILL UP
-        creep.memory.state = "FILL UP"
-        actionFillUp(creep)
+        if (creep.store.getUsedCapacity() === 0) {
+          creep.memory.state = "FILL UP"
+          actionFillUp(creep)
+        }
       }
     }
   }
