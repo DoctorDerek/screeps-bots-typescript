@@ -29,15 +29,16 @@ export const actionDeposit = (creep: Creep) => {
         }
       }
     }
-    if (terrain.get(creep.pos.x, creep.pos.y) === TERRAIN_MASK_SWAMP) {
-      // Drop energy as we traverse swamps; we'll pick it up next turn
-      dropIt(creep, "Swamp!")
-      // STATE TRANSITION: DEPOSIT --> SWAMP DEPOSIT
-      creep.memory.state = "SWAMP DEPOSIT"
-    } else {
-      // STATE TRANSITION: SWAMP DEPOSIT --> DEPOSIT
-      creep.memory.state = "DEPOSIT"
-    }
+  }
+
+  if (terrain.get(creep.pos.x, creep.pos.y) === TERRAIN_MASK_SWAMP) {
+    // Drop energy as we traverse swamps; we'll pick it up next turn
+    dropIt(creep, "Swamp!")
+    // STATE TRANSITION: DEPOSIT --> SWAMP DEPOSIT
+    creep.memory.state = "SWAMP DEPOSIT"
+  } else {
+    // STATE TRANSITION: SWAMP DEPOSIT --> DEPOSIT
+    creep.memory.state = "DEPOSIT"
   }
 
   // Find a drop off site and move to it
