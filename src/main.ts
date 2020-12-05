@@ -1,6 +1,6 @@
 import { ErrorMapper } from "utils/ErrorMapper"
 import { roleMiner } from "roleMiner"
-import { roleFetcher } from "roleFetcher"
+import { roleTaxi } from "roleTaxi"
 import { roleUpgrader } from "roleUpgrader"
 import { roleDefender } from "roleDefender"
 import { roleBuilder } from "roleBuilder"
@@ -15,7 +15,6 @@ import {
   getCreepTemplatesAndTargetCounts,
   planRoads,
 } from "helper_functions"
-import { roleTaxi } from "roleTaxi"
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
@@ -35,9 +34,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
   // Constants and initializations
   // Define roles
   const creepRoles = [
-    "MiniFetcher",
     "Miner",
-    "Fetcher",
+    "Taxi",
+    "MiniMiner",
+    "MiniTaxi",
     "Upgrader",
     "Builder",
     "Defender",
@@ -45,16 +45,16 @@ export const loop = ErrorMapper.wrapLoop(() => {
     "Taxi",
   ]
   const creepTemplates: { [role: string]: BodyPartConstant[] } = {
-    MiniFetcher: [MOVE, CARRY], // 100
-    // Miner: [WORK, WORK, MOVE], // 250
-    // Miner: [WORK, WORK, WORK], // 300
-    Miner: [WORK], // 100 // TODO increase WORK parts
-    Fetcher: [MOVE, CARRY, CARRY, CARRY, CARRY], // 250
+    // Miner: [WORK, WORK, MOVE], // 250 (Old - No Taxi)
+    Miner: [WORK, WORK, WORK], // 300
+    Taxi: [MOVE, MOVE, MOVE, CARRY, CARRY, CARRY], // 300
+    // Mini creeps for brand new room
+    MiniMiner: [WORK, WORK], // 200
+    MiniTaxi: [MOVE, CARRY], // 100
     Upgrader: [WORK, MOVE, CARRY, CARRY, CARRY], // 300
     Builder: [WORK, MOVE, CARRY, CARRY, CARRY], // 300
     Defender: [MOVE, MOVE, ATTACK, ATTACK], // 260
     Eye: [MOVE], // 50
-    Taxi: [MOVE, CARRY], // 100 // TODO increase MOVE parts
   }
   const creepCounts: { [role: string]: number } = {}
   for (const role of creepRoles) {
@@ -147,33 +147,23 @@ export const loop = ErrorMapper.wrapLoop(() => {
       creepsPerRoom += mineablePositionsCount / roomCount
       // This is the average mineablePositions from rooms that we have vision in
 
-      // start TAXI testing
-      // TODO: initial Taxi / Miner (1st miner vs. 2nd miners)
-      // Taxi: MOVE -> MOVE / CARRY
-      // Miner: WORK WORK -> WORK / WORK / WORK
-      if (
-        creepCounts.Taxi < creepCounts.Miner ||
-        creepCounts.Miner >= mineablePositionsCount
-      ) {
+      if (creepCounts.Miner === 0 && creepCounts.MiniMiner === 0) {
         // Brand new room, spawn mini creeps instead
-        spawnResult = spawnCreep("Taxi")
-      } else {
+        spawnResult = spawnCreep("MiniMiner")
+      } else if (creepCounts.Taxi === 0 && creepCounts.MiniTaxi === 0) {
         // Always spawn an Upgrader when we have at least one Miner
-        spawnResult = spawnCreep("Miner")
-      }
-      // end TAXI testing
-      /*
-      if (
-        creepCounts.MiniFetcher < creepCounts.Miner &&
-        creepCounts.MiniFetcher < creepsPerRoom
+        spawnResult = spawnCreep("Taxi")
+      } else if (
+        // Normal room after first miner and first taxi (mini creeps)
+        creepCounts.MiniTaxi < creepCounts.Miner &&
+        creepCounts.MiniTaxi < creepsPerRoom
       ) {
         // Brand new room, spawn mini creeps instead
-        spawnResult = spawnCreep("MiniFetcher")
+        spawnResult = spawnCreep("MiniTaxi")
       } else if (creepCounts.Upgrader < 1 && creepCounts.Miner > 0) {
         // Always spawn an Upgrader when we have at least one Miner
         spawnResult = spawnCreep("Upgrader")
-      }
-      else if (
+      } else if (
         creepCounts.Miner < creepsPerRoom * 2 &&
         creepCounts.Miner < mineablePositionsCount
       ) {
@@ -189,15 +179,14 @@ export const loop = ErrorMapper.wrapLoop(() => {
         constructionSiteCount > 0
       ) {
         spawnResult = spawnCreep("Builder")
-      } else if (creepCounts.Fetcher < creepsPerRoom) {
-        // normal size fetchers hopefully once roads are being built
-        spawnResult = spawnCreep("Fetcher")
+      } else if (creepCounts.Taxi < creepsPerRoom) {
+        // normal size Taxis hopefully once roads are being built
+        spawnResult = spawnCreep("Taxi")
       } else if (creepCounts.Defender < creepsPerRoom) {
         spawnResult = spawnCreep("Defender")
       }
       // TODO: Defense against creep invasion
       // else if (creepCounts.Defender < 3) {      spawnCreep("Defender")    }
-      */
     }
     console.log(
       `🧠 creepsPerRoom is ${Math.ceil(
@@ -216,12 +205,14 @@ export const loop = ErrorMapper.wrapLoop(() => {
       if (creep.spawning === false) {
         switch (creepRole) {
           case "Miner":
+          // no break
+          case "MiniMiner":
             roleMiner.run(creep)
             break
-          case "Fetcher":
+          case "Taxi":
           // no break
-          case "MiniFetcher":
-            roleFetcher.run(creep)
+          case "MiniTaxi":
+            roleTaxi.run(creep)
             break
           case "Upgrader":
             roleUpgrader.run(creep)
@@ -234,9 +225,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
             break
           case "Eye":
             roleEye.run(creep)
-            break
-          case "Taxi":
-            roleTaxi.run(creep)
             break
           default:
             console.log(`Unknown creep role: ${creep.memory.role}`)
