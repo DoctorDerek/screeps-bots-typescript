@@ -1,4 +1,8 @@
 export const actionMine = (creep: Creep) => {
+  if (!Game.creeps[creep.memory.taxiDriver]) {
+    // if our taxi driver died, we need to clear it from memory
+    creep.memory.taxiDriver = ""
+  }
   const destinationRoomName = creep.memory.destination.roomName
   if (
     creep.pos.x === creep.memory.destination.x &&
