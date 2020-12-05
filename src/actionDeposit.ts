@@ -22,7 +22,11 @@ export const actionDeposit = (creep: Creep) => {
   )
   if (adjacentCreeps.length > 0) {
     for (const adjacent of adjacentCreeps) {
-      if (adjacent.creep.memory.state === "FILL UP") {
+      if (
+        adjacent.creep.memory.state === "FILL UP" &&
+        adjacent.creep.pos.getRangeTo(Game.spawns.Spawn1.pos) <
+          creep.pos.getRangeTo(Game.spawns.Spawn1.pos)
+      ) {
         const transferResult = creep.transfer(adjacent.creep, RESOURCE_ENERGY)
         // STATE TRANSITION for adjacent creep: FILL UP --> DEPOSIT
         if (
