@@ -33,6 +33,8 @@ export const assignTaxis = (taxi: Creep) => {
   for (const creepNeedingTow of creepsNeedingTow) {
     if (creepNeedingTow.memory.taxiDriver) {
       if (taxi.name === creepNeedingTow.memory.taxiDriver) {
+        // wait, this is our ride! save it to our memory as taxiDriver
+        taxi.memory.taxiDriver = creepNeedingTow.name
         // no need to mess with the creep if we're already assigned to it
         continue
       }
