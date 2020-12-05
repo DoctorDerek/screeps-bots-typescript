@@ -151,7 +151,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
       // TODO: initial Taxi / Miner (1st miner vs. 2nd miners)
       // Taxi: MOVE -> MOVE / CARRY
       // Miner: WORK WORK -> WORK / WORK / WORK
-      if (creepCounts.Taxi < creepCounts.Miner) {
+      if (
+        creepCounts.Taxi < creepCounts.Miner ||
+        creepCounts.miner === mineablePositionsCount
+      ) {
         // Brand new room, spawn mini creeps instead
         spawnResult = spawnCreep("Taxi")
       } else {
