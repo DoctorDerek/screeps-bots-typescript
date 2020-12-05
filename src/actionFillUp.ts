@@ -40,7 +40,7 @@ export const actionFillUp = (creep: Creep) => {
       }
     }
     if (creep.store.getFreeCapacity() === 0) {
-      // we are full after transferring so let's deposit
+      // we are full after picking up resources so let's deposit
       // STATE TRANSITION: FILL UP --> DEPOSIT
       creep.memory.state = "DEPOSIT"
       actionDeposit(creep)

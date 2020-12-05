@@ -10,6 +10,7 @@ export const dropIt = (creep: Creep, why: string = "") => {
 }
 
 export const actionDeposit = (creep: Creep) => {
+  /* TODO: Transfer to adjacent creeps
   // transfer our energy to adjacent creeps if we can
   const TRANSFER_RANGE = 1
   const adjacentCreeps = creep.room.lookForAtArea(
@@ -26,7 +27,7 @@ export const actionDeposit = (creep: Creep) => {
         dropIt(creep, "There's someone to give it to")
       }
     }
-  }
+  }*/
   if (creep.store.getUsedCapacity() === 0) {
     // we have nothing left after transferring
     // STATE TRANSITION: DEPOSIT | SWAMP DEPOSIT --> FILL UP
