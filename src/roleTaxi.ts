@@ -27,7 +27,9 @@ export const assignTaxis = (taxi: Creep) => {
       rangeBetweenCreepsMultiRoom(taxi, b)
   )
 
-  console.log(`Creeps needing tow: ${creepsNeedingTow}`)
+  if (creepsNeedingTow.length > 0) {
+    DEBUG && console.log(`Creeps needing tow: ${creepsNeedingTow}`)
+  }
 
   // For each creep that needs a tow:
   for (const creepNeedingTow of creepsNeedingTow) {
