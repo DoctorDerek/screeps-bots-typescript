@@ -44,7 +44,9 @@ export const assignTaxis = (taxi: Creep) => {
       const otherTaxi = Game.creeps[creepNeedingTow.memory.taxiDriver]
       DEBUG &&
         console.log(
-          `taxi: ${taxi.name}, otherTaxi: ${
+          `creepNeedingTow: ${creepNeedingTow.name}, taxi: ${
+            taxi.name
+          }, otherTaxi: ${
             otherTaxi && otherTaxi.name
           }, creepNeedingTow.memory.taxiDriver: ${
             creepNeedingTow.memory.taxiDriver
