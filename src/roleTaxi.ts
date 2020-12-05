@@ -169,7 +169,9 @@ export const roleTaxi = {
     }
     if (taxi.memory.state === "TAXI") {
       actionTaxi(taxi)
-      dropIt(taxi, "🚕TAXI🚖") // drop any energy we might be carrying
+      if (taxi.store.getUsedCapacity() > 0) {
+        dropIt(taxi, "🚕TAXI🚖") // drop any energy we might be carrying
+      }
       if (taxi.memory.taxiDriver === "") {
         taxi.say("⛽ FILL UP")
         taxi.memory.state = "FILL UP"
