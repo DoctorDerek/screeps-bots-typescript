@@ -153,6 +153,11 @@ export const planRoads = () => {
       }
     }
 
+    // Turn roads off until RCL 3
+    const buildRoads =
+      Game.spawns.Spawn1.room.controller &&
+      Game.spawns.Spawn1.room.controller.level >= 3
+
     // Road planning logic part 1: For mineable positions in the current room
     // Find the mineable positions we want to build roads to
     const mineablePositions = getMineablePositions(Game.spawns.Spawn1.room)
@@ -199,6 +204,7 @@ export const planRoads = () => {
           if (
             constructionSitesPlannedThisTick <
               MAX_CONSTRUCTION_SITES_PER_TICK &&
+            buildRoads &&
             Game.spawns.Spawn1.room.createConstructionSite(
               pathStep.x,
               pathStep.y,
@@ -240,6 +246,7 @@ export const planRoads = () => {
               if (
                 constructionSitesPlannedThisTick <
                   MAX_CONSTRUCTION_SITES_PER_TICK &&
+                buildRoads &&
                 Game.spawns.Spawn1.room.createConstructionSite(
                   x,
                   y,
@@ -267,6 +274,7 @@ export const planRoads = () => {
           if (
             constructionSitesPlannedThisTick <
               MAX_CONSTRUCTION_SITES_PER_TICK &&
+            buildRoads &&
             Game.spawns.Spawn1.room.createConstructionSite(
               pathStep.x,
               pathStep.y,
@@ -298,6 +306,7 @@ export const planRoads = () => {
                 if (
                   constructionSitesPlannedThisTick <
                     MAX_CONSTRUCTION_SITES_PER_TICK &&
+                  buildRoads &&
                   Game.spawns.Spawn1.room.createConstructionSite(
                     x,
                     y,
@@ -335,6 +344,7 @@ export const planRoads = () => {
             if (
               constructionSitesPlannedThisTick <
                 MAX_CONSTRUCTION_SITES_PER_TICK &&
+              buildRoads &&
               Game.spawns.Spawn1.room.createConstructionSite(
                 pathStep.x,
                 pathStep.y,
@@ -366,6 +376,7 @@ export const planRoads = () => {
             if (
               constructionSitesPlannedThisTick <
                 MAX_CONSTRUCTION_SITES_PER_TICK &&
+              buildRoads &&
               Game.spawns.Spawn1.room.createConstructionSite(
                 pathStep.x,
                 pathStep.y,
@@ -434,6 +445,7 @@ export const planRoads = () => {
             if (
               constructionSitesPlannedThisTick <
                 MAX_CONSTRUCTION_SITES_PER_TICK &&
+              buildRoads &&
               Game.spawns.Spawn1.room.createConstructionSite(
                 pathStep.x,
                 pathStep.y,
@@ -465,6 +477,7 @@ export const planRoads = () => {
             if (
               constructionSitesPlannedThisTick <
                 MAX_CONSTRUCTION_SITES_PER_TICK &&
+              buildRoads &&
               accessibleAdjacentRoom.createConstructionSite(
                 pathStep.x,
                 pathStep.y,
@@ -497,6 +510,7 @@ export const planRoads = () => {
                   if (
                     constructionSitesPlannedThisTick <
                       MAX_CONSTRUCTION_SITES_PER_TICK &&
+                    buildRoads &&
                     accessibleAdjacentRoom.createConstructionSite(
                       x,
                       y,
