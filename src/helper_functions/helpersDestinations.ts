@@ -16,9 +16,7 @@ export const assignDestination = (
   destinationRoomName: string,
   creep: Creep
 ) => {
-  const currentRoom = creep.room
-  creep.memory.destination = new RoomPosition(25, 25, currentRoom.name)
-  const exitDirection = currentRoom.findExitTo(destinationRoomName)
+  const exitDirection = creep.room.findExitTo(destinationRoomName)
   // TODO Check destination tile to see if it's a valid position (not a wall)
   const exitPosition =
     (exitDirection === FIND_EXIT_TOP ||
@@ -29,9 +27,10 @@ export const assignDestination = (
   if (exitPosition) {
     creep.memory.destination.x = exitPosition.x
     creep.memory.destination.y = exitPosition.y
+    creep.memory.destination.roomName = creep.room.name
   } else {
     console.log(
-      `${creep.name} with role ${creep.memory.role} could not find the exit direction ${exitDirection}`
+      `${creep.name} with role ${creep.memory.role} could not find the exit direction ${exitDirection} which is ERR_NO_PATH (${ERR_NO_PATH})`
     )
   }
   creep.say(`🚶(${creep.memory.destination.x},${creep.memory.destination.y})`)
