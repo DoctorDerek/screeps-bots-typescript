@@ -37,6 +37,28 @@ export const actionFillUp = (creep: Creep) => {
           console.log(`Creep ${creep.name} had pickup error ${pickupResult}`)
         }
       }
+    }
+    // transfer our energy to adjacent creeps if we can
+    const TRANSFER_RANGE = 1
+    const adjacentCreeps = creep.room.lookForAtArea(
+      "creep",
+      creep.pos.y - TRANSFER_RANGE,
+      creep.pos.x - TRANSFER_RANGE,
+      creep.pos.y + TRANSFER_RANGE,
+      creep.pos.x + TRANSFER_RANGE,
+      true // asArray
+    )
+    if (adjacentCreeps.length > 0) {
+      for (const adjacent of adjacentCreeps) {
+        if (adjacent.creep.memory.state === "DEPOSIT") {
+          const transferResult = adjacent.creep.transfer(creep, RESOURCE_ENERGY)
+        }
+      }
+    }
+    if (creep.store.getFreeCapacity() === 0) {
+      // we are full after transferring so let's deposit
+      // STATE TRANSITION: FILL UP --> DEPOSIT
+      creep.memory.state = "DEPOSIT"
     } else {
       {
         // We should compare the amount of all energy sources in the room

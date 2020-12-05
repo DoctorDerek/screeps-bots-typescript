@@ -19,11 +19,10 @@ export const actionDeposit = (creep: Creep) => {
     creep.pos.x + TRANSFER_RANGE,
     true // asArray
   )
-  let transferResult
   if (adjacentCreeps.length > 0) {
     for (const adjacent of adjacentCreeps) {
       if (adjacent.creep.memory.state === "FILL UP") {
-        transferResult = creep.transfer(adjacent.creep, RESOURCE_ENERGY)
+        const transferResult = creep.transfer(adjacent.creep, RESOURCE_ENERGY)
       }
     }
   }
