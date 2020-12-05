@@ -1,18 +1,39 @@
 import { VISUALIZE_PATH_STYLE } from "./helper_functions/RANDOM_COLOR"
+import { lookForAtAreaWithOffset } from "helper_functions"
 
 export const dropIt = (creep: Creep, why: string = "") => {
   console.log(`${creep.name} says, "Drop it!${why && " " + why}"`)
-  creep.say("💧DROP IT!🩸")
+  creep.say("💧DROP IT🩸")
   // There's an issue, so let's drop our resources and mosey on
   creep.drop(RESOURCE_ENERGY)
 }
 
 export const actionDeposit = (creep: Creep) => {
   const terrain = new Room.Terrain(creep.room.name)
-
-  if (terrain.get(creep.pos.x, creep.pos.y) === TERRAIN_MASK_SWAMP) {
-    // Drop energy as we traverse swamps; we'll pick it up next turn
-    dropIt(creep, "Swamp!")
+  if (creep.memory.state === "SWAMP DEPOSIT") {
+    // Pick up the surrounding resources on our way through
+    // Look for resources dropped around current position
+    const RESOURCE_OFFSET = 1 // we can pickup adjacent resources
+    const resourcesAtCurrentPosition = lookForAtAreaWithOffset(
+      creep,
+      RESOURCE_OFFSET,
+      LOOK_RESOURCES
+    )
+    if (resourcesAtCurrentPosition.length > 0) {
+      for (const aResource of resourcesAtCurrentPosition) {
+        const pickupResult = creep.pickup(aResource.resource)
+        if (pickupResult === ERR_FULL) {
+          // ignore this error, happens occasionally for unknown reason
+        } else if (pickupResult !== OK) {
+          console.log(`Creep ${creep.name} had pickup error ${pickupResult}`)
+        }
+      }
+    }
+    if (terrain.get(creep.pos.x, creep.pos.y) === TERRAIN_MASK_SWAMP) {
+      // Drop energy as we traverse swamps; we'll pick it up next turn
+      dropIt(creep, "Swamp!")
+      creep.memory.state = "SWAMP DEPOSIT"
+    }
   }
 
   // Find a drop off site and move to it
@@ -26,17 +47,17 @@ export const actionDeposit = (creep: Creep) => {
     },
   })
   /* TODO: Add container logic (unowned, thus different)
-  if(targetDropOffSite===null) {
-    // There is no extension or spawn, but maybe there is a contrainer
-    targetDropOffSite = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-      filter: (structure) => {
-        return (
-          (structure.structureType === STRUCTURE_CONTAINER &&
-            _.sum(structure.store) < structure.storeCapacity)
-        )
-      },
-    })
-  }*/
+    if(targetDropOffSite===null) {
+      // There is no extension or spawn, but maybe there is a contrainer
+      targetDropOffSite = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+        filter: (structure) => {
+          return (
+            (structure.structureType === STRUCTURE_CONTAINER &&
+              _.sum(structure.store) < structure.storeCapacity)
+          )
+        },
+      })
+    }*/
   if (targetDropOffSite != null) {
     // There is somewhere to drop it off in the current room
     const transferResult = creep.transfer(targetDropOffSite, RESOURCE_ENERGY)

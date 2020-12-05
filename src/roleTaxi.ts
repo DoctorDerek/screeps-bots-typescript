@@ -174,15 +174,18 @@ export const roleTaxi = {
         taxi.memory.state = "FILL UP"
       }
     }
-    if (taxi.memory.state === "DEPOSIT") {
+    if (
+      taxi.memory.state === "DEPOSIT" ||
+      taxi.memory.state === "SWAMP DEPOSIT"
+    ) {
       // Go deposit current load
       actionDeposit(taxi)
-      if (taxi.store.getUsedCapacity() === 0) {
-        // STATE TRANSITION: DEPOSIT --> FILL UP
-        taxi.memory.destination = new RoomPosition(25, 25, taxi.room.name)
-        taxi.say("🚶 FILL UP")
-        taxi.memory.state = "FILL UP"
-      }
+    }
+    if (taxi.memory.state === "DEPOSIT" && taxi.store.getUsedCapacity() === 0) {
+      // STATE TRANSITION: DEPOSIT --> FILL UP
+      taxi.memory.destination = new RoomPosition(25, 25, taxi.room.name)
+      taxi.say("🚶 FILL UP")
+      taxi.memory.state = "FILL UP"
     }
   },
 }
