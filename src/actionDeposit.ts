@@ -46,7 +46,6 @@ export const actionDeposit = (creep: Creep) => {
   }
   if (creep.memory.state !== "FILL UP") {
     // if we have anything left, go on to deposit it
-    const terrain = new Room.Terrain(creep.room.name)
     if (creep.memory.state === "SWAMP DEPOSIT") {
       // Pick up the surrounding resources on our way through
       // Look for resources dropped around current position
@@ -68,7 +67,11 @@ export const actionDeposit = (creep: Creep) => {
       }
     }
 
-    if (terrain.get(creep.pos.x, creep.pos.y) === TERRAIN_MASK_SWAMP) {
+    const terrain = new Room.Terrain(creep.room.name)
+    if (
+      terrain.get(creep.pos.x, creep.pos.y) === TERRAIN_MASK_SWAMP &&
+      creep.pos.lookFor("structure")[0].structureType === STRUCTURE_ROAD
+    ) {
       // Drop energy as we traverse swamps; we'll pick it up next turn
       dropIt(creep, "Swamp!")
       // STATE TRANSITION: DEPOSIT --> SWAMP DEPOSIT
