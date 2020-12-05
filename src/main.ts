@@ -145,11 +145,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
           console.log(`Game.spawns.Spawn1 had spawn result ${spawnResult}`)
         }
         creepsPerRoom += 1
-        //creepsPerRoom += mineablePositionsCount / roomCount
+        creepsPerRoom += mineablePositionsCount / roomCount
         // This is the average mineablePositions from rooms that we have vision in
 
-        creepCounts.Miner += creepCounts.miniMiner
-        creepCounts.Taxi += creepCounts.miniTaxi
+        creepCounts.Miner += creepCounts.MiniMiner
+        creepCounts.Taxi += creepCounts.MiniTaxi
         if (creepCounts.Miner === 0) {
           // Brand new room, spawn mini creeps instead
           spawnResult = spawnCreep("MiniMiner")
