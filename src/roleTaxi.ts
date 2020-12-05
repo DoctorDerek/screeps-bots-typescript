@@ -150,20 +150,21 @@ export const roleTaxi = {
       taxi.memory.state = "FILL UP"
     }
     if (taxi.memory.state === "FILL UP") {
-      // Make a taxi run if anyone needs it
-      assignTaxis(taxi)
-      // STATE TRANSITION: FILL UP --> TAXI
-      if (taxi.memory.taxiDriver !== "") {
-        taxi.say("🚕TAXI🚖")
-        taxi.memory.state = "TAXI"
-      } else {
-        // Go pick up resources from containers and the floor
-        actionFillUp(taxi)
-        // STATE TRANSITION: FILL UP --> DEPOSIT
-        if (taxi.store.getUsedCapacity() / taxi.store.getCapacity() > 0.9) {
-          taxi.say("🚶 DEPOSIT")
-          taxi.memory.state = "DEPOSIT"
+      if (taxi.store.getUsedCapacity() === 0) {
+        // Make a taxi run if anyone needs it
+        assignTaxis(taxi)
+        // STATE TRANSITION: FILL UP --> TAXI
+        if (taxi.memory.taxiDriver !== "") {
+          taxi.say("🚕TAXI🚖")
+          taxi.memory.state = "TAXI"
         }
+      }
+      // Go pick up resources from containers and the floor
+      actionFillUp(taxi)
+      // STATE TRANSITION: FILL UP --> DEPOSIT
+      if (taxi.store.getUsedCapacity() / taxi.store.getCapacity() > 0.9) {
+        taxi.say("🚶 DEPOSIT")
+        taxi.memory.state = "DEPOSIT"
       }
     }
     if (taxi.memory.state === "TAXI") {
