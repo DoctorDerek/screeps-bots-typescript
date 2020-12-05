@@ -70,8 +70,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
   const SPAWN_A_CREEP_EVERY_X_TURNS = 10
   if (
     Game.spawns.Spawn1.spawning === null &&
-    (Game.spawns.Spawn1.room.energyAvailable === 100 ||
-      Game.spawns.Spawn1.room.energyAvailable === 200 ||
+    (creepCounts.Miner === 0 ||
+      creepCounts.Taxi === 0 ||
       Game.spawns.Spawn1.room.energyAvailable >= 300)
   ) {
     // Count mineable positions in all rooms with vision
