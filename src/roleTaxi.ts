@@ -1,5 +1,5 @@
 import { actionFillUp } from "actionFillUp"
-import { actionDeposit } from "actionDeposit"
+import { actionDeposit, dropIt } from "actionDeposit"
 
 export const assignTaxis = (taxi: Creep) => {
   // For each taxi: Find all creeps (in all rooms) who need a tow
@@ -169,6 +169,7 @@ export const roleTaxi = {
     }
     if (taxi.memory.state === "TAXI") {
       actionTaxi(taxi)
+      dropIt(taxi, "🚕TAXI🚖") // drop any energy we might be carrying
       if (taxi.memory.taxiDriver === "") {
         taxi.say("⛽ FILL UP")
         taxi.memory.state = "FILL UP"

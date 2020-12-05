@@ -152,26 +152,19 @@ export const loop = ErrorMapper.wrapLoop(() => {
         spawnResult = spawnCreep("MiniMiner")
       } else if (creepCounts.Taxi === 0 && creepCounts.MiniTaxi === 0) {
         // Always spawn an Upgrader when we have at least one Miner
-        spawnResult = spawnCreep("Taxi")
-      } else if (
-        // Normal room after first miner and first taxi (mini creeps)
-        creepCounts.MiniTaxi < creepCounts.Miner &&
-        creepCounts.MiniTaxi < creepsPerRoom
-      ) {
-        // Brand new room, spawn mini creeps instead
         spawnResult = spawnCreep("MiniTaxi")
       } else if (creepCounts.Upgrader < 1 && creepCounts.Miner > 0) {
         // Always spawn an Upgrader when we have at least one Miner
         spawnResult = spawnCreep("Upgrader")
       } else if (
-        creepCounts.Miner < creepsPerRoom * 2 &&
+        creepCounts.Miner < creepsPerRoom * 4 &&
         creepCounts.Miner < mineablePositionsCount
       ) {
-        // spawn twice as many miners as we should per-room
+        // spawn 4x as many miners as we should per-room
         // until we hit mineable positions (the max miners)
         spawnResult = spawnCreep("Miner")
-      } else if (creepCounts.Eye < creepsPerRoom) {
-        spawnResult = spawnCreep("Eye")
+      } else if (creepCounts.Taxi < creepsPerRoom) {
+        spawnResult = spawnCreep("Taxi")
       } else if (creepCounts.Upgrader < creepsPerRoom) {
         spawnResult = spawnCreep("Upgrader")
       } else if (
@@ -179,10 +172,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
         constructionSiteCount > 0
       ) {
         spawnResult = spawnCreep("Builder")
-      } else if (creepCounts.Taxi < creepsPerRoom) {
-        // normal size Taxis hopefully once roads are being built
-        spawnResult = spawnCreep("Taxi")
-      } else if (creepCounts.Defender < creepsPerRoom) {
+      } else if (creepsPerRoom > 5 && creepCounts.Eye < creepsPerRoom) {
+        spawnResult = spawnCreep("Eye")
+      } else if (creepsPerRoom > 10 && creepCounts.Defender < creepsPerRoom) {
         spawnResult = spawnCreep("Defender")
       }
       // TODO: Defense against creep invasion
