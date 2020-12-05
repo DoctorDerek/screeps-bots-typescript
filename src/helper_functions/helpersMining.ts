@@ -78,13 +78,22 @@ export const getMineablePositions = (room: Room) => {
     // Necessary for simulation mode to avoid source keeper mining:
     // Check for source keepers & their lairs nearby
     const RANGE_TO_LOOK_FOR_SOURCE_KEEPERS = 3
+    let lookTop = sourceY - RANGE_TO_LOOK_FOR_SOURCE_KEEPERS
+    let lookLeft = sourceX - RANGE_TO_LOOK_FOR_SOURCE_KEEPERS
+    let lookBottom = sourceY + RANGE_TO_LOOK_FOR_SOURCE_KEEPERS
+    let lookRight = sourceX + RANGE_TO_LOOK_FOR_SOURCE_KEEPERS
+    // boundary checks
+    lookTop = lookTop < 0 ? 0 : lookTop
+    lookLeft = lookLeft < 0 ? 0 : lookLeft
+    lookBottom = lookBottom > 49 ? 49 : lookBottom
+    lookRight = lookRight > 49 ? 49 : lookRight
     const creepsLookArray = room.lookForAtArea(
       // lookForAtArea(type, top, left, bottom, right, [asArray])
       LOOK_CREEPS,
-      sourceY - RANGE_TO_LOOK_FOR_SOURCE_KEEPERS,
-      sourceX - RANGE_TO_LOOK_FOR_SOURCE_KEEPERS,
-      sourceY + RANGE_TO_LOOK_FOR_SOURCE_KEEPERS,
-      sourceX + RANGE_TO_LOOK_FOR_SOURCE_KEEPERS,
+      lookTop
+      lookLeft
+      lookBottom
+      lookRight
       true // asArray
     )
 
