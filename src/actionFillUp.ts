@@ -1,3 +1,4 @@
+import { actionDeposit } from "actionDeposit"
 import { lookForAtAreaWithOffset } from "helper_functions"
 
 export const actionFillUp = (creep: Creep) => {
@@ -59,6 +60,7 @@ export const actionFillUp = (creep: Creep) => {
       // we are full after transferring so let's deposit
       // STATE TRANSITION: FILL UP --> DEPOSIT
       creep.memory.state = "DEPOSIT"
+      actionDeposit(creep)
     } else {
       {
         // We should compare the amount of all energy sources in the room

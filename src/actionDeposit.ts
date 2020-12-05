@@ -1,5 +1,6 @@
 import { VISUALIZE_PATH_STYLE } from "./helper_functions/RANDOM_COLOR"
 import { lookForAtAreaWithOffset } from "helper_functions"
+import { actionFillUp } from "actionFillUp"
 
 export const dropIt = (creep: Creep, why: string = "") => {
   console.log(`${creep.name} says, "Drop it!${why && " " + why}"`)
@@ -30,6 +31,7 @@ export const actionDeposit = (creep: Creep) => {
     // we have nothing left after transferring
     // STATE TRANSITION: DEPOSIT | SWAMP DEPOSIT --> FILL UP
     creep.memory.state = "FILL UP"
+    actionFillUp(creep)
   } else {
     // if we have anything left, go on to deposit it
     const terrain = new Room.Terrain(creep.room.name)
