@@ -27,13 +27,13 @@ export const actionDeposit = (creep: Creep) => {
         dropIt(creep, "There's someone to give it to")
       }
     }
-  }*/
+  }
   if (creep.store.getUsedCapacity() === 0) {
     // we have nothing left after transferring
     // STATE TRANSITION: DEPOSIT | SWAMP DEPOSIT --> FILL UP
     creep.memory.state = "FILL UP"
     actionFillUp(creep)
-  } else {
+  } else */ {
     // if we have anything left, go on to deposit it
     const terrain = new Room.Terrain(creep.room.name)
     if (creep.memory.state === "SWAMP DEPOSIT") {
