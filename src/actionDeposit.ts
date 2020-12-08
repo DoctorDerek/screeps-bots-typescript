@@ -12,14 +12,7 @@ export const dropIt = (creep: Creep, why: string = "") => {
 export const actionDeposit = (creep: Creep) => {
   // transfer our energy to adjacent creeps if we can
   const TRANSFER_RANGE = 1
-  const adjacentCreeps = creep.room.lookForAtArea(
-    "creep",
-    creep.pos.y - TRANSFER_RANGE,
-    creep.pos.x - TRANSFER_RANGE,
-    creep.pos.y + TRANSFER_RANGE,
-    creep.pos.x + TRANSFER_RANGE,
-    true // asArray
-  )
+  const adjacentCreeps = lookForAtAreaWithOffset(creep, TRANSFER_RANGE, "creep")
   if (adjacentCreeps.length > 0) {
     for (const adjacent of adjacentCreeps) {
       if (
