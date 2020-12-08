@@ -1,5 +1,6 @@
 import { actionFillUp } from "actionFillUp"
 import { actionDeposit, dropIt } from "actionDeposit"
+import { createPrivateKey } from "crypto"
 
 export const assignTaxis = (taxi: Creep) => {
   // For each taxi: Find all creeps (in all rooms) who need a tow
@@ -13,13 +14,13 @@ export const assignTaxis = (taxi: Creep) => {
         target.pos.roomName !== target.memory.destination.roomName)
   )
 
+  // Sort creeps needing a tow by closest creep to this taxi
   // Calculate the range; for the current room we can use pos.getRangeTo()
   // but for other rooms we need Game.map.getRoomLinearDistance() * 50
   const rangeBetweenCreepsMultiRoom = (a: Creep, b: Creep) =>
     a.room.name === b.room.name
       ? a.pos.getRangeTo(b.pos)
       : 50 * Game.map.getRoomLinearDistance(a.room.name, b.room.name)
-  // Sort those creeps by closest creep to this taxi
   // Sort by closest creep across multiple rooms
   creepsNeedingTow.sort(
     (a, b) =>
@@ -87,17 +88,17 @@ export const assignTaxis = (taxi: Creep) => {
 }
 
 export const actionTaxi = (taxi: Creep) => {
-  const DEBUG = false
+  const DEBUG = true
   const target = taxi.pos.findClosestByRange(FIND_MY_CREEPS, {
     filter: function (target: Creep) {
-      DEBUG && console.log(`${taxi.name} found ${target.name}`)
-      DEBUG &&
-        console.log(
-          `${target.getActiveBodyparts(MOVE)} &&
+      // DEBUG && console.log(`${taxi.name} found ${target.name}`)
+      /* DEBUG &&
+      console.log(
+        `${target.getActiveBodyparts(MOVE)} &&
             ((${target.pos.x} !== ${target.memory.destination.x} &&
             ${target.pos.y} !== ${target.memory.destination.y}) ||
             ${target.pos.roomName} !== ${target.memory.destination.roomName})`
-        )
+      )*/
       return (
         target.getActiveBodyparts(MOVE) === 0 &&
         (target.pos.x !== target.memory.destination.x ||
@@ -109,35 +110,83 @@ export const actionTaxi = (taxi: Creep) => {
   if (target && target.memory.taxiDriver === taxi.name) {
     // This taxi is the assigned driver for that creep, let's go tow
     DEBUG && console.log(`${taxi.name} is trying to tow ${target.name}`)
-    if (taxi.pull(target) === ERR_NOT_IN_RANGE) {
-      taxi.moveTo(target) // pickup ride
-      DEBUG &&
-        console.log(`creep.moveTo(target) returned ${taxi.moveTo(target)}`)
-    } else {
-      target.move(taxi) // get towed
-      DEBUG && console.log(`target.move(creep) returned ${target.move(taxi)}`)
-      if (
-        taxi.pos.x === target.memory.destination.x &&
-        taxi.pos.y === target.memory.destination.y &&
-        taxi.pos.roomName === target.memory.destination.roomName
-      ) {
-        // switch places because we arrived
-        taxi.move(taxi.pos.getDirectionTo(target))
-        // remove this taxi driver from target's memory
-        target.memory.taxiDriver = ""
-        // this taxi driver is no longer working, so turn on
-        // the taxi light with an empty string for taxiDriver
-        taxi.memory.taxiDriver = ""
+
+    // try to pull the target (we might not be in range)
+    const pullResult = taxi.pull(target)
+
+    // normal code (not on edges)
+    if (
+      taxi.pos.x > 0 &&
+      taxi.pos.x < 49 &&
+      taxi.pos.y > 0 &&
+      taxi.pos.y < 49
+    ) {
+      // we're not on an edge, so go pickup our ride
+      if (pullResult === ERR_NOT_IN_RANGE) {
+        taxi.moveTo(target) // pickup ride
+        DEBUG &&
+          console.log(`creep.moveTo(target) returned ${taxi.moveTo(target)}`)
       } else {
-        taxi.moveTo(
-          new RoomPosition(
-            target.memory.destination.x,
-            target.memory.destination.y,
-            target.memory.destination.roomName
+        // pullResult === OK // ?
+        target.move(taxi) // get towed
+        DEBUG && console.log(`target.move(creep) returned ${target.move(taxi)}`)
+        if (
+          taxi.pos.x === target.memory.destination.x &&
+          taxi.pos.y === target.memory.destination.y &&
+          taxi.pos.roomName === target.memory.destination.roomName
+        ) {
+          // switch places because we arrived
+          taxi.move(taxi.pos.getDirectionTo(target))
+          // remove this taxi driver from target's memory
+          target.memory.taxiDriver = ""
+          // this taxi driver is no longer working, so turn on
+          // the taxi light with an empty string for taxiDriver
+          taxi.memory.taxiDriver = ""
+        } else {
+          taxi.moveTo(
+            new RoomPosition(
+              target.memory.destination.x,
+              target.memory.destination.y,
+              target.memory.destination.roomName
+            )
           )
-        )
+        }
+      }
+    } else {
+      // edge handling logic
+      // Tick 1: Move onto edge with pulling creep pulling other creep next to edge
+      // ^ this is the normal behavior, but we need to stay in tow mode
+      if (pullResult === ERR_NOT_IN_RANGE) {
+        // Tick 2: Do nothing (because we teleported and the target didn't)
+        // We're on an edge, but our passenger isn't with us
+        DEBUG && console.log(`${taxi.name} is waiting to teleport back`)
+      } else {
+        // Tick 3: Pulling creep is back in the room with the other creep
+        // The trick is to move to the creep object that you're pulling
+        DEBUG && console.log(`${taxi.name} is going to switch on the edge`)
+        target.move(taxi) // get towed
+        taxi.move(taxi.pos.getDirectionTo(target)) // switch places
+        // Tick 4: Pulled creep is now through to the other room.
+        // (Since we're out of range, our normal code will move to that room)
+        // Tick 5: Passenger isn't with us
+        // Tick 6: Pull other creep off room edge.
       }
     }
+    /*
+    Tick 1: Move onto edge with pulling creep pulling other creep next to edge
+    Tick 2: Do nothing
+    Tick 3: Pulling creep is back in the room with the other creep. Now you have to issue a valid move intent to enable the pull. This is nasty. You cannot move "into the wall", you have to either move along the room edge or move back into the room you just came from. Going to assume you move along the room edge as I think moving into the room you just came from adds a tick.
+    Tick 4: Pulled creep is now through to the other room. If the pulling creep moved along the room edge it is also. Pulling creep moves into the room further.
+    Tick 5: Do nothing
+    Tick 6: Pull other creep off room edge.
+        [...]
+    @Snowgoose on slack told me how to avoid the "Tick 3" intent issue. In the OP I complained because the game doesn't let you pull unless you move somewhere, which screws up when you have an "implicit" move by sitting still on an exit tile. You don't want to move anywhere though. You want to teleport back through.
+    //
+    The trick is to move to the creep object that you're pulling. That seems to confuse the game graphics a little (and maybe the engine), but gets the desired behaviour of pulling using the implicit teleportation.
+    //
+    I still think we should be allowed ot issue move intents into the room edge and have pull complete.
+    // Tigga from https://screeps.com/forum/topic/2808/pull-across-room-boundaries
+    */
   } else {
     // We're not working right now, so let's be sure our taxi
     // light is on with the empty string saved as taxiDriver
