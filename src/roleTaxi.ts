@@ -4,7 +4,7 @@ import { createPrivateKey } from "crypto"
 
 export const assignTaxis = (taxi: Creep) => {
   // For each taxi: Find all creeps (in all rooms) who need a tow
-  const DEBUG = true
+  const DEBUG = false
   // find closest creep who needs a tow (no MOVE parts)
   const creepsNeedingTow = Array.from(Object.values(Game.creeps)).filter(
     (target: Creep) =>
@@ -163,9 +163,19 @@ export const actionTaxi = (taxi: Creep) => {
       } else {
         // Tick 3: Pulling creep is back in the room with the other creep
         // The trick is to move to the creep object that you're pulling
-        DEBUG && console.log(`${taxi.name} is going to switch on the edge`)
+        DEBUG && console.log(`${taxi.name} is at an edge`)
         target.move(taxi) // get towed
-        taxi.move(taxi.pos.getDirectionTo(target)) // switch places
+        //taxi.move(taxi.pos.getDirectionTo(target)) // switch places
+        if (taxi.pos.x === 0 || taxi.pos.x === 49) {
+          // left edge, right edge
+          taxi.move(TOP)
+          taxi.move(BOTTOM)
+        }
+        if (taxi.pos.y === 0 || taxi.pos.y === 49) {
+          // bottom edge, top edge
+          taxi.move(LEFT)
+          taxi.move(RIGHT)
+        }
         // Tick 4: Pulled creep is now through to the other room.
         // (Since we're out of range, our normal code will move to that room)
         // Tick 5: Passenger isn't with us
