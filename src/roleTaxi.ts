@@ -87,6 +87,33 @@ export const assignTaxis = (taxi: Creep) => {
   }
 }
 
+export const moveAfterPull = (taxi: Creep, target: Creep) => {
+  const DEBUG = false
+  target.move(taxi) // get towed
+  DEBUG && console.log(`target.move(creep) returned ${target.move(taxi)}`)
+  if (
+    taxi.pos.x === target.memory.destination.x &&
+    taxi.pos.y === target.memory.destination.y &&
+    taxi.pos.roomName === target.memory.destination.roomName
+  ) {
+    // switch places because we arrived
+    taxi.move(taxi.pos.getDirectionTo(target))
+    // remove this taxi driver from target's memory
+    target.memory.taxiDriver = ""
+    // this taxi driver is no longer working, so turn on
+    // the taxi light with an empty string for taxiDriver
+    taxi.memory.taxiDriver = ""
+  } else {
+    taxi.moveTo(
+      new RoomPosition(
+        target.memory.destination.x,
+        target.memory.destination.y,
+        target.memory.destination.roomName
+      )
+    )
+  }
+}
+
 export const actionTaxi = (taxi: Creep) => {
   const DEBUG = true
   const target = taxi.pos.findClosestByRange(FIND_MY_CREEPS, {
@@ -128,29 +155,7 @@ export const actionTaxi = (taxi: Creep) => {
           console.log(`creep.moveTo(target) returned ${taxi.moveTo(target)}`)
       } else {
         // pullResult === OK // ?
-        target.move(taxi) // get towed
-        DEBUG && console.log(`target.move(creep) returned ${target.move(taxi)}`)
-        if (
-          taxi.pos.x === target.memory.destination.x &&
-          taxi.pos.y === target.memory.destination.y &&
-          taxi.pos.roomName === target.memory.destination.roomName
-        ) {
-          // switch places because we arrived
-          taxi.move(taxi.pos.getDirectionTo(target))
-          // remove this taxi driver from target's memory
-          target.memory.taxiDriver = ""
-          // this taxi driver is no longer working, so turn on
-          // the taxi light with an empty string for taxiDriver
-          taxi.memory.taxiDriver = ""
-        } else {
-          taxi.moveTo(
-            new RoomPosition(
-              target.memory.destination.x,
-              target.memory.destination.y,
-              target.memory.destination.roomName
-            )
-          )
-        }
+        moveAfterPull(taxi, target)
       }
     } else {
       // edge handling logic
@@ -166,15 +171,27 @@ export const actionTaxi = (taxi: Creep) => {
         DEBUG && console.log(`${taxi.name} is at an edge`)
         target.move(taxi) // get towed
         //taxi.move(taxi.pos.getDirectionTo(target)) // switch places
-        if (taxi.pos.x === 0 || taxi.pos.x === 49) {
-          // left edge, right edge
-          taxi.move(TOP)
-          taxi.move(BOTTOM)
-        }
-        if (taxi.pos.y === 0 || taxi.pos.y === 49) {
-          // bottom edge, top edge
-          taxi.move(LEFT)
-          taxi.move(RIGHT)
+        // If we just arrived at the edge, then walk along it
+        if (taxi.memory.taxiDriver === taxi.name) {
+          // we just arrived
+          if (taxi.pos.x === 0 || taxi.pos.x === 49) {
+            // left edge, right edge
+            taxi.move(TOP)
+            taxi.move(BOTTOM)
+          }
+          if (taxi.pos.y === 0 || taxi.pos.y === 49) {
+            // bottom edge, top edge
+            taxi.move(LEFT)
+            taxi.move(RIGHT)
+          }
+          // save the old room as the taxiDriver in memory temporarily
+          taxi.memory.taxiDriver = taxi.room.name
+        } else {
+          // we are in the other room and need to move off the edge
+          // which is the normal logic
+          moveAfterPull(taxi, target)
+          // since we've transited, remove the old room from memory
+          taxi.memory.taxiDriver = taxi.memory.taxiDriver
         }
         // Tick 4: Pulled creep is now through to the other room.
         // (Since we're out of range, our normal code will move to that room)
