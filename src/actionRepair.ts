@@ -8,7 +8,10 @@ export const actionRepair = (creep: Creep) => {
     // because containers and roads aren't owned structures
     allRepairSites.push(...room.find(FIND_STRUCTURES))
   }
-  allRepairSites.sort((a, b) => a.hits / a.hitsMax - b.hits / b.hitsMax)
+  // Percentage-based sort:
+  // allRepairSites.sort((a, b) => a.hits / a.hitsMax - b.hits / b.hitsMax)
+  // Absolute HP to repair-based sort
+  allRepairSites.sort((a, b) => a.hitsMax - a.hits - (b.hitsMax - b.hits))
   targetRepairSite = allRepairSites[0]
 
   if (targetRepairSite) {
