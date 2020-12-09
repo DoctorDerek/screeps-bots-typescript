@@ -115,7 +115,7 @@ export const moveAfterPull = (taxi: Creep, target: Creep) => {
 }
 
 export const actionTaxi = (taxi: Creep) => {
-  const DEBUG = true
+  const DEBUG = false
   const target = taxi.pos.findClosestByRange(FIND_MY_CREEPS, {
     filter: function (target: Creep) {
       // DEBUG && console.log(`${taxi.name} found ${target.name}`)
