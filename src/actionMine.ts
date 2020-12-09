@@ -103,7 +103,8 @@ export const actionMine = (creep: Creep) => {
           )
       }
     } else {
-      console.log(`${creep.name} is waiting for a tow`)
+      const DEBUG = false
+      DEBUG && console.log(`${creep.name} is waiting for a tow`)
     }
   }
 }
