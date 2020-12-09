@@ -32,6 +32,7 @@ export const roleBuilder = {
         creep.say("🚶 FILL UP")
         creep.memory.state = "FILL UP"
       } else {
+        actionRepairNearby(creep) // simultaneous repair action takes precedence over build in the Screeps game engine
         actionRepair(creep)
       }
     }
