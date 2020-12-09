@@ -223,6 +223,9 @@ export const actionTaxi = (taxi: Creep) => {
 
 export const roleTaxi = {
   run(taxi: Creep) {
+    if (taxi.getActiveBodyparts(MOVE) === 0) {
+      taxi.suicide() // we probably sustained damage
+    }
     if (taxi.memory.state === "THINK") {
       taxi.say("⛽ FILL UP")
       taxi.memory.state = "FILL UP"
