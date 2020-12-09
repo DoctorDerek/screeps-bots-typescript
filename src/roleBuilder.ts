@@ -1,6 +1,6 @@
 import { actionFillUp } from "actionFillUp"
 import { actionBuild } from "actionBuild"
-import { actionRepair } from "actionRepair"
+import { actionRepairNearby } from "actionRepairNearby"
 
 export const roleBuilder = {
   run(creep: Creep) {
@@ -22,7 +22,7 @@ export const roleBuilder = {
         creep.say("🚶 FILL UP")
         creep.memory.state = "FILL UP"
       } else {
-        actionRepair(creep) // takes precedence over build
+        actionRepairNearby(creep) // takes precedence over build
         actionBuild(creep)
       }
     }

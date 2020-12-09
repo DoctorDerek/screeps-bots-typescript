@@ -1,8 +1,3 @@
-import {
-  getAccessibleAdjacentRoomNames,
-  getRoomsFromRoomNamesIfVision,
-} from "helper_functions"
-
 export const actionBuild = (creep: Creep) => {
   // Build a structure (i.e. a road) if we are close to one
   let targetConstructionSite = creep.pos.findClosestByPath(
@@ -55,5 +50,7 @@ export const actionBuild = (creep: Creep) => {
     }
   } else {
     console.log(`${creep.name} had no construction site anywhere`)
+    // STATE TRANSITION: BUILD --> REPAIR
+    creep.memory.state = "REPAIR"
   }
 }
