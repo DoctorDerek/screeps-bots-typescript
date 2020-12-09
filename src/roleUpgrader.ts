@@ -2,6 +2,12 @@ import { actionFillUp } from "actionFillUp"
 
 export const roleUpgrader = {
   run(creep: Creep) {
+    if (
+      creep.getActiveBodyparts(WORK) === 0 ||
+      creep.getActiveBodyparts(CARRY) === 0
+    ) {
+      creep.suicide() // we must have sustained damage
+    }
     if (creep.memory.state === "THINK") {
       creep.say("🚶 FILL UP")
       creep.memory.state = "FILL UP"
