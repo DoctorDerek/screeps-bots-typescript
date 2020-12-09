@@ -1,6 +1,6 @@
 import { VISUALIZE_PATH_STYLE } from "./helper_functions/RANDOM_COLOR"
 import { lookForAtAreaWithOffset } from "helper_functions"
-import { actionFillUp } from "actionFillUp"
+// import { actionFillUp } from "actionFillUp" // circular dependency
 
 export const dropIt = (creep: Creep, why: string = "") => {
   console.log(`${creep.name} says, "Drop it!${why && " " + why}"`)
@@ -32,7 +32,7 @@ export const actionDeposit = (creep: Creep) => {
         // STATE TRANSITION: DEPOSIT --> FILL UP
         if (creep.store.getUsedCapacity() === 0) {
           creep.memory.state = "FILL UP"
-          actionFillUp(creep)
+          //actionFillUp(creep) // circular dependency
         }
       }
     }
