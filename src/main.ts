@@ -148,42 +148,49 @@ export const loop = ErrorMapper.wrapLoop(() => {
         creepsPerRoom += mineablePositionsCount / roomCount
         // This is the average mineablePositions from rooms that we have vision in
 
-        creepCounts.Miner += creepCounts.MiniMiner
-        creepCounts.Taxi += creepCounts.MiniTaxi
-        if (creepCounts.Miner === 0) {
-          // Brand new room, spawn mini creeps instead
-          spawnResult = spawnCreep("MiniMiner")
-        } else if (creepCounts.Taxi === 0) {
-          // Always spawn an Upgrader when we have at least one Miner
-          spawnResult = spawnCreep("MiniTaxi")
-        } else if (creepCounts.Upgrader < 1 && creepCounts.Miner >= 2) {
-          // Always spawn an Upgrader when we have at least two Miners
-          spawnResult = spawnCreep("Upgrader")
-        } else if (creepCounts.Taxi < creepCounts.Miner) {
-          spawnResult = spawnCreep("Taxi")
-        } else if (
-          creepCounts.Miner < creepsPerRoom * 2 &&
-          creepCounts.Miner < mineablePositionsCount
-        ) {
-          // spawn twice as many miners as we should per-room
-          // until we hit mineable positions (the max miners)
-          spawnResult = spawnCreep("Miner")
-        } else if (creepCounts.Taxi < creepsPerRoom) {
-          spawnResult = spawnCreep("Taxi")
-        } else if (creepCounts.Upgrader < creepsPerRoom) {
-          spawnResult = spawnCreep("Upgrader")
-        } else if (
-          creepCounts.Builder < creepsPerRoom &&
-          constructionSiteCount > 0
-        ) {
-          spawnResult = spawnCreep("Builder")
-        } else if (creepCounts.Eye < creepsPerRoom) {
-          spawnResult = spawnCreep("Eye")
-        } else if (creepsPerRoom > 10 && creepCounts.Defender < creepsPerRoom) {
+        if (Game.spawns.Spawn1.room.find(FIND_HOSTILE_CREEPS).length > 0) {
           spawnResult = spawnCreep("Defender")
+        } else {
+          creepCounts.Miner += creepCounts.MiniMiner
+          creepCounts.Taxi += creepCounts.MiniTaxi
+          if (creepCounts.Miner === 0) {
+            // Brand new room, spawn mini creeps instead
+            spawnResult = spawnCreep("MiniMiner")
+          } else if (creepCounts.Taxi === 0) {
+            // Always spawn an Upgrader when we have at least one Miner
+            spawnResult = spawnCreep("MiniTaxi")
+          } else if (creepCounts.Upgrader < 1 && creepCounts.Miner >= 2) {
+            // Always spawn an Upgrader when we have at least two Miners
+            spawnResult = spawnCreep("Upgrader")
+          } else if (creepCounts.Taxi < creepCounts.Miner) {
+            spawnResult = spawnCreep("Taxi")
+          } else if (
+            creepCounts.Miner < creepsPerRoom * 2 &&
+            creepCounts.Miner < mineablePositionsCount
+          ) {
+            // spawn twice as many miners as we should per-room
+            // until we hit mineable positions (the max miners)
+            spawnResult = spawnCreep("Miner")
+          } else if (creepCounts.Taxi < creepsPerRoom) {
+            spawnResult = spawnCreep("Taxi")
+          } else if (creepCounts.Upgrader < creepsPerRoom / 2) {
+            spawnResult = spawnCreep("Upgrader")
+          } else if (
+            creepCounts.Builder < creepsPerRoom / 2 &&
+            constructionSiteCount > 0
+          ) {
+            spawnResult = spawnCreep("Builder")
+          } else if (creepCounts.Eye < creepsPerRoom / 2) {
+            spawnResult = spawnCreep("Eye")
+          } else if (
+            creepsPerRoom > 10 &&
+            creepCounts.Defender < creepsPerRoom
+          ) {
+            spawnResult = spawnCreep("Defender")
+          }
+          // TODO: Defense against creep invasion
+          // else if (creepCounts.Defender < 3) {      spawnCreep("Defender")    }
         }
-        // TODO: Defense against creep invasion
-        // else if (creepCounts.Defender < 3) {      spawnCreep("Defender")    }
       }
     }
     console.log(
