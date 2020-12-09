@@ -180,10 +180,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
             constructionSiteCount > 0
           ) {
             spawnResult = spawnCreep("Builder")
-          } else if (creepCounts.Eye < creepsPerRoom / 2) {
+          } else if (creepsPerRoom > 2 && creepCounts.Eye < creepsPerRoom / 2) {
             spawnResult = spawnCreep("Eye")
           } else if (
-            creepsPerRoom > 10 &&
+            creepsPerRoom > 4 &&
             creepCounts.Defender < creepsPerRoom
           ) {
             spawnResult = spawnCreep("Defender")
