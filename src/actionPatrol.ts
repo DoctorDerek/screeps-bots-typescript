@@ -27,9 +27,14 @@ export const actionPatrol = (creep: Creep) => {
       "creep",
       creep.memory.destination.x,
       creep.memory.destination.y
+    ).length > 0 ||
+    creep.room.lookForAt(
+      "structure",
+      creep.memory.destination.x,
+      creep.memory.destination.y
     ).length > 0
   ) {
-    // We either arrived or there's a creep at our destination
+    // We either arrived or there's a creep or structure at our destination
     randomDestination(creep)
   } else {
     // Get to moving
