@@ -51,11 +51,17 @@ export const MAX_MINEABLE_POSITIONS_UNCLAIMED_ROOMS = 1
 export const getMineablePositions = (room: Room) => {
   // Make an array of valid destinations to mine sources
   const mineablePositions: RoomPosition[] = []
+  // We assume an unclaimed room
   let maxMineablePositionsPerSource: number = MAX_MINEABLE_POSITIONS_UNCLAIMED_ROOMS
   if (room.controller) {
-    if (room.controller.owner) {
-      if (room.controller.owner.username !== "djD-REK") {
-        // not our claimed room
+    const { owner, reservation } = room.controller
+    if (owner || reservation) {
+      const myUsername = "djD-REK"
+      if (
+        (owner && owner.username !== myUsername) ||
+        (reservation && reservation.username !== myUsername)
+      ) {
+        // Someone else has claimed or resreved the room, so don't mine it
         return mineablePositions // empty array []
       } else {
         maxMineablePositionsPerSource = MAX_MINEABLE_POSITIONS_CLAIMED_ROOMS
