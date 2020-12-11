@@ -1,47 +1,71 @@
-import { actionPatrol } from "actionPatrol"
 import { moveToDestination } from "helper_functions"
 
 export const roleClaim = {
   run(creep: Creep) {
-    const target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
-    if (target) {
-      creep.say("⚔️ attacking")
-      console.log(`⚔️ attacking ⚔️ ${creep.name} ⚔️ ${target}`)
-      if (creep.attack(target) === ERR_NOT_IN_RANGE) {
-        creep.moveTo(target)
-      }
-    } else {
-      if (creep.memory.state === "THINK") {
-        // we need a home base room (a miner to guard)
-        const allMiners = Array.from(Object.values(Game.creeps)).filter(
-          (creep) => creep.memory.role === "Miner"
+    if (creep.memory.state === "THINK") {
+      // we need a home base room (something to reserve)
+      const roomNamesWithClaimCreep = Array.from(Object.keys(Game.creeps))
+        .filter(
+          (creepName) =>
+            creepName !== creep.name &&
+            Game.creeps[creepName].memory.role === "Claim"
         )
+        .map((creepName) => Game.creeps[creepName].memory.destination.roomName)
 
-        if (allMiners.length > 0) {
-          const myMiner =
-            allMiners[Math.floor(Math.random() * allMiners.length)]
-          creep.memory.destination.x = myMiner.pos.x
-          creep.memory.destination.y = myMiner.pos.y
-          creep.memory.destination.roomName = myMiner.pos.roomName
-          creep.memory.state = "TRANSIT"
-          console.log(
-            `${creep.name} assigned to destination creep ${myMiner.name} at ${myMiner.pos.x},${myMiner.pos.y} in ${myMiner.room.name}`
-          )
-        }
+      const roomsNeedingClaimCreep = Array.from(
+        Object.values(Game.rooms)
+      ).filter(
+        (room) =>
+          // there's no spawn
+          undefined !==
+            room
+              .find(FIND_MY_STRUCTURES)
+              .find((structure) => structure.structureType === "spawn") &&
+          // and there's no Claim creep assigned to it
+          !roomNamesWithClaimCreep.includes(room.name) &&
+          // and there's a room controller to claim
+          room.controller
+      )
+
+      if (roomsNeedingClaimCreep.length > 0) {
+        // Pick a room at random
+        const myRoom =
+          roomsNeedingClaimCreep[
+            Math.floor(Math.random() * roomsNeedingClaimCreep.length)
+          ]
+        const x = myRoom.controller ? myRoom.controller.pos.x : 25
+        creep.memory.destination.x = x
+        const y = myRoom.controller ? myRoom.controller.pos.y : 25
+        creep.memory.destination.y = y
+        creep.memory.destination.roomName = myRoom.name
+        creep.memory.state = "TRANSIT"
+        console.log(
+          `${creep.name} assigned to destination room ${myRoom.name} at ${x},${y}`
+        )
       }
-      if (creep.memory.state === "TRANSIT") {
-        if (!Game.rooms[creep.memory.destination.roomName]) {
-          // we don't have vision of the destination
-          creep.memory.state = "THINK"
-        }
-        moveToDestination(creep)
-        if (creep.room.name === creep.memory.destination.roomName) {
-          creep.memory.state = "GUARD"
-        }
+    }
+    if (creep.memory.state === "TRANSIT") {
+      if (!Game.rooms[creep.memory.destination.roomName]) {
+        // We don't have vision of the destination
+        creep.memory.state = "THINK"
       }
-      if (creep.memory.state === "GUARD") {
-        // we have a home base to guard
-        actionPatrol(creep)
+      moveToDestination(creep)
+      if (creep.room.name === creep.memory.destination.roomName) {
+        creep.memory.state = "RESERVE"
+      }
+    }
+    if (creep.memory.state === "RESERVE") {
+      // We have a controller to reserve
+      if (creep.room.controller) {
+        const reserveResult = creep.reserveController(creep.room.controller)
+        if (reserveResult === ERR_NOT_IN_RANGE) {
+          moveToDestination(creep)
+        }
+      } else {
+        console.log(
+          `${creep.name} said there's no controller in its room ${creep.room.name}`
+        )
+        creep.memory.state = "THINK"
       }
     }
   },
