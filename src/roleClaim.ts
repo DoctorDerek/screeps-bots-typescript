@@ -3,6 +3,7 @@ import { moveToDestination } from "helper_functions"
 export const roleClaim = {
   run(creep: Creep) {
     if (creep.memory.state === "THINK") {
+      creep.say("🧠THINK🧠")
       // we need a home base room (something to reserve)
       const roomNamesWithClaimCreep = Array.from(Object.keys(Game.creeps))
         .filter(
@@ -45,6 +46,7 @@ export const roleClaim = {
       }
     }
     if (creep.memory.state === "TRANSIT") {
+      creep.say("🚡TRANSIT🚡")
       if (!Game.rooms[creep.memory.destination.roomName]) {
         // We don't have vision of the destination
         creep.memory.state = "THINK"
@@ -55,6 +57,7 @@ export const roleClaim = {
       }
     }
     if (creep.memory.state === "RESERVE") {
+      creep.say("💵RSRV🈯")
       // We have a controller to reserve
       if (creep.room.controller) {
         const reserveResult = creep.reserveController(creep.room.controller)
