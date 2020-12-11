@@ -15,6 +15,7 @@ import {
   getCreepTemplatesAndTargetCounts,
   planRoads,
 } from "helper_functions"
+import { roleClaim } from "roleClaim"
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
@@ -33,17 +34,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
   // Constants and initializations
   // Define roles
-  const creepRoles = [
-    "Miner",
-    "Taxi",
-    "MiniMiner",
-    "MiniTaxi",
-    "Upgrader",
-    "Builder",
-    "Defender",
-    "Eye",
-    "Taxi",
-  ]
   const creepTemplates: { [role: string]: BodyPartConstant[] } = {
     // Miner: [WORK, WORK, MOVE], // 250 (Old - No Taxi)
     Miner: [WORK, WORK, WORK], // 300
@@ -55,7 +45,20 @@ export const loop = ErrorMapper.wrapLoop(() => {
     Builder: [WORK, MOVE, CARRY, CARRY, CARRY], // 300
     Defender: [MOVE, MOVE, ATTACK, ATTACK], // 260
     Eye: [MOVE], // 50
+    Claim: [MOVE, CLAIM], // 650
   }
+  const creepRoles = Array.from(Object.keys(creepTemplates))
+  const getCost = (role: string) =>
+    creepTemplates[role].reduce((sum, part) => sum + BODYPART_COST[part], 0)
+  const creepCosts: { [role: string]: number } = {}
+  let minimumCost = Infinity
+  creepRoles.forEach((role) => {
+    const cost = getCost(role)
+    creepCosts[role] = cost
+    if (cost < minimumCost) {
+      minimumCost = cost
+    }
+  })
   const creepCounts: { [role: string]: number } = {}
   for (const role of creepRoles) {
     creepCounts[role] = _.filter(
@@ -64,15 +67,13 @@ export const loop = ErrorMapper.wrapLoop(() => {
     ).length
   }
 
+  const energyAvailable = Game.spawns.Spawn1.room.energyAvailable
   // Generate some creeps
-  // TODO: Smarter energy check (300)
-  // WIP: Check every 10 turns
-  const SPAWN_A_CREEP_EVERY_X_TURNS = 10
   if (
     Game.spawns.Spawn1.spawning === null &&
     (creepCounts.Miner === 0 ||
       creepCounts.Taxi === 0 ||
-      Game.spawns.Spawn1.room.energyAvailable >= 300)
+      energyAvailable >= minimumCost)
   ) {
     // Count mineable positions in all rooms with vision
     let mineablePositionsCount = getMineablePositionsInAllRoomsWithVision()
@@ -134,6 +135,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     // Spawn creeps on a "per-room" basis, 5 at a time
     const visibleRooms = Array.from(Object.values(Game.rooms))
     const roomCount = visibleRooms.length
+    const roomsWithoutSpawns = roomCount - 1
     let creepsPerRoom = 0
     let spawnResult // we set this when we actually attempt a spawn
     while (creepsPerRoom < mineablePositionsCount) {
@@ -148,52 +150,76 @@ export const loop = ErrorMapper.wrapLoop(() => {
         creepsPerRoom += mineablePositionsCount / roomCount
         // This is the average mineablePositions from rooms that we have vision in
 
-        if (Game.spawns.Spawn1.room.find(FIND_HOSTILE_CREEPS).length > 0) {
+        if (
+          Game.spawns.Spawn1.room.find(FIND_HOSTILE_CREEPS).length > 0 &&
+          Game.spawns.Spawn1.room.energyAvailable > getCost("Defender")
+        ) {
           spawnResult = spawnCreep("Defender")
         } else {
           creepCounts.Miner += creepCounts.MiniMiner
           creepCounts.Taxi += creepCounts.MiniTaxi
-          if (creepCounts.Miner === 0) {
+          if (
+            creepCounts.Miner === 0 &&
+            creepCosts.MiniMiner <= energyAvailable
+          ) {
             // Brand new room, spawn mini creeps instead
             spawnResult = spawnCreep("MiniMiner")
-          } else if (creepCounts.Taxi === 0) {
-            // Always spawn an Upgrader when we have at least one Miner
+          } else if (
+            creepCounts.Taxi === 0 &&
+            creepCosts.MiniTaxi <= energyAvailable
+          ) {
+            // Spawn a MiniTaxi to match our MiniMiner
             spawnResult = spawnCreep("MiniTaxi")
-          } else if (creepCounts.Upgrader < 1 && creepCounts.Miner >= 2) {
+          } else if (
+            creepCounts.Upgrader < 1 &&
+            creepCounts.Miner >= 2 &&
+            creepCosts.Upgrader <= energyAvailable
+          ) {
             // Always spawn an Upgrader when we have at least two Miners
             spawnResult = spawnCreep("Upgrader")
-          } else if (creepCounts.Taxi < creepCounts.Miner) {
+          } else if (
+            creepCounts.Taxi < creepCounts.Miner &&
+            creepCosts.Taxi <= energyAvailable
+          ) {
             spawnResult = spawnCreep("Taxi")
           } else if (
             creepCounts.Miner < creepsPerRoom * 2 &&
-            creepCounts.Miner < mineablePositionsCount
+            creepCounts.Miner < mineablePositionsCount &&
+            creepCosts.Miner <= energyAvailable
           ) {
-            // spawn twice as many miners as we should per-room
+            // Spawn twice as many miners as we should per-room
             // until we hit mineable positions (the max miners)
             spawnResult = spawnCreep("Miner")
           } else if (creepCounts.Taxi < creepsPerRoom) {
             spawnResult = spawnCreep("Taxi")
-          } else if (creepCounts.Upgrader < creepsPerRoom / 2) {
+          } else if (
+            creepCounts.Claim < creepsPerRoom &&
+            creepCounts.Claim < roomsWithoutSpawns &&
+            creepCosts.Claim <= energyAvailable
+          ) {
+            // We need a claim creep for every room without a spawn
+          } else if (
+            creepCounts.Upgrader < creepsPerRoom / 2 &&
+            creepCosts.Upgrader <= energyAvailable
+          ) {
             spawnResult = spawnCreep("Upgrader")
           } else if (
             creepCounts.Builder < creepsPerRoom / 2 &&
-            constructionSiteCount > 0
+            constructionSiteCount > 0 &&
+            creepCosts.Builder <= energyAvailable
           ) {
             spawnResult = spawnCreep("Builder")
           } else if (
-            //creepsPerRoom > 2 &&
-            creepCounts.Eye <
-            creepsPerRoom / 2
+            creepCounts.Eye < creepsPerRoom / 2 &&
+            creepCosts.Eye <= energyAvailable
           ) {
             spawnResult = spawnCreep("Eye")
           } else if (
-            //creepsPerRoom > 4 && // ? don't build defenders until later?
-            creepCounts.Defender < creepsPerRoom
+            creepCounts.Defender < creepsPerRoom &&
+            creepCosts.Defender <= energyAvailable
           ) {
             spawnResult = spawnCreep("Defender")
           }
-          // TODO: Defense against creep invasion
-          // else if (creepCounts.Defender < 3) {      spawnCreep("Defender")    }
         }
       }
     }
@@ -234,6 +260,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
             break
           case "Eye":
             roleEye.run(creep)
+            break
+          case "Claim":
+            roleClaim.run(creep)
             break
           default:
             console.log(`Unknown creep role: ${creep.memory.role}`)
