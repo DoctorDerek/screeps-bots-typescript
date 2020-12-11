@@ -208,6 +208,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
             creepCosts.Claim <= energyAvailable
           ) {
             // We need a claim creep for every room without a spawn
+            spawnResult = spawnCreep("Claim")
           } else if (
             creepCounts.Upgrader < creepsPerRoom / 2 &&
             creepCosts.Upgrader <= energyAvailable
