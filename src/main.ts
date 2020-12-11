@@ -66,6 +66,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
       (creep) => creep.memory.role === role
     ).length
   }
+  const DEBUG = false
+  DEBUG &&
+    Array.from(Object.entries(creepCosts)).forEach(([role, cost]) =>
+      console.log(`${role}: ${cost}`)
+    )
 
   const energyAvailable = Game.spawns.Spawn1.room.energyAvailable
   // Generate some creeps
@@ -152,7 +157,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
         if (
           Game.spawns.Spawn1.room.find(FIND_HOSTILE_CREEPS).length > 0 &&
-          Game.spawns.Spawn1.room.energyAvailable > getCost("Defender")
+          creepCosts.Defender <= energyAvailable
         ) {
           spawnResult = spawnCreep("Defender")
         } else {
@@ -190,7 +195,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
             // Spawn twice as many miners as we should per-room
             // until we hit mineable positions (the max miners)
             spawnResult = spawnCreep("Miner")
-          } else if (creepCounts.Taxi < creepsPerRoom) {
+          } else if (
+            creepCounts.Taxi < creepsPerRoom &&
+            creepCosts.Taxi <= energyAvailable
+          ) {
             spawnResult = spawnCreep("Taxi")
           } else if (
             creepCounts.Claim < creepsPerRoom &&
