@@ -98,11 +98,19 @@ export const moveAfterPull = (taxi: Creep, target: Creep) => {
   ) {
     // switch places because we arrived
     taxi.move(taxi.pos.getDirectionTo(target))
-    // remove this taxi driver from target's memory
-    target.memory.taxiDriver = ""
-    // this taxi driver is no longer working, so turn on
-    // the taxi light with an empty string for taxiDriver
-    taxi.memory.taxiDriver = ""
+    // Check to see if the target actually made it, in case there
+    // is a fatigue issue
+    if (
+      target.pos.x === target.memory.destination.x &&
+      target.pos.y === target.memory.destination.y &&
+      target.pos.roomName === target.memory.destination.roomName
+    ) {
+      // remove this taxi driver from target's memory
+      target.memory.taxiDriver = ""
+      // this taxi driver is no longer working, so turn on
+      // the taxi light with an empty string for taxiDriver
+      taxi.memory.taxiDriver = ""
+    }
   } else {
     taxi.moveTo(
       new RoomPosition(
