@@ -19,7 +19,7 @@ export const actionDeposit = (creep: Creep) => {
       if (
         adjacent.creep.memory.state === "FILL UP" &&
         adjacent.creep.pos.findPathTo(Game.spawns.Spawn1.pos).length <
-          creep.pos.findPathTo(Game.spawns.Spawn1.pos)
+          creep.pos.findPathTo(Game.spawns.Spawn1.pos).length
       ) {
         creep.say("💱TRADE📉")
         adjacent.creep.say("💱TRADE💹")
