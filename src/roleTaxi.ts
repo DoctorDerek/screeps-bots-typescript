@@ -99,6 +99,7 @@ export const moveAfterPull = (taxi: Creep, target: Creep) => {
   ) {
     // switch places because we arrived
     taxi.move(taxi.pos.getDirectionTo(target))
+
     // Check to see if the target actually made it, in case there
     // is a fatigue issue
     if (
@@ -113,13 +114,27 @@ export const moveAfterPull = (taxi: Creep, target: Creep) => {
       taxi.memory.taxiDriver = ""
     }
   } else {
-    taxi.moveTo(
+    const path = taxi.pos.findPathTo(
       new RoomPosition(
         target.memory.destination.x,
         target.memory.destination.y,
         target.memory.destination.roomName
       )
     )
+    if (path.length > 0) {
+      taxi.move(path[0].direction)
+    } else {
+      console.log(`${taxi.name} didn't find a path, are we on an edge?`)
+      // walk along the edge
+      if (taxi.pos.x === 0 || taxi.pos.x === 49) {
+        taxi.move(TOP)
+        taxi.move(BOTTOM)
+      }
+      if (taxi.pos.y === 0 || taxi.pos.y === 49) {
+        taxi.move(LEFT)
+        taxi.move(RIGHT)
+      }
+    }
   }
 }
 
