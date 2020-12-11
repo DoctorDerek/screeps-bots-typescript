@@ -145,10 +145,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     const roomsWithoutSpawns = roomCount - 1
     let creepsPerRoom = 0
     let spawnResult // we set this when we actually attempt a spawn
-    while (creepsPerRoom < mineablePositionsCount) {
-      if (spawnResult === OK || spawnResult === ERR_NOT_ENOUGH_ENERGY) {
-        break
-      }
+    while (!(spawnResult === OK || spawnResult === ERR_NOT_ENOUGH_ENERGY)) {
       {
         if (spawnResult !== undefined) {
           console.log(`Game.spawns.Spawn1 had spawn result ${spawnResult}`)
