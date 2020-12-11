@@ -153,7 +153,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
         if (spawnResult !== undefined) {
           console.log(`Game.spawns.Spawn1 had spawn result ${spawnResult}`)
         }
-        creepsPerRoom += 1
+        //creepsPerRoom += 1
         creepsPerRoom += mineablePositionsCount / roomCount
         // This is the average mineablePositions from rooms that we have vision in
 
