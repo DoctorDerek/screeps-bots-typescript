@@ -78,9 +78,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
   minimumCost = 300
   if (
     Game.spawns.Spawn1.spawning === null &&
-    (creepCounts.Miner === 0 ||
-      creepCounts.Taxi === 0 ||
-      energyAvailable >= minimumCost)
+    (energyAvailable >= minimumCost ||
+      ((creepCounts.Miner === 0 || creepCounts.Taxi === 0) &&
+        energyAvailable >= creepCosts.MiniTaxi))
   ) {
     // Count mineable positions in all rooms with vision
     let mineablePositionsCount = getMineablePositionsInAllRoomsWithVision()
@@ -145,7 +145,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
     const roomsWithoutSpawns = roomCount - 1
     let creepsPerRoom = 0
     let spawnResult // we set this when we actually attempt a spawn
-    while (!(spawnResult === OK || spawnResult === ERR_NOT_ENOUGH_ENERGY)) {
+    while (
+      !(spawnResult === OK || spawnResult === ERR_NOT_ENOUGH_ENERGY) &&
+      creepsPerRoom < 2 * mineablePositionsCount
+    ) {
       {
         if (spawnResult !== undefined) {
           console.log(`Game.spawns.Spawn1 had spawn result ${spawnResult}`)
