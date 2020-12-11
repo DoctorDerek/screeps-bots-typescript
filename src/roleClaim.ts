@@ -17,10 +17,10 @@ export const roleClaim = {
       ).filter(
         (room) =>
           // there's no spawn
-          undefined !==
-            room
-              .find(FIND_MY_STRUCTURES)
-              .find((structure) => structure.structureType === "spawn") &&
+          room
+            .find(FIND_MY_STRUCTURES)
+            .filter((structure) => structure.structureType === "spawn")
+            .length === 0 &&
           // and there's no Claim creep assigned to it
           !roomNamesWithClaimCreep.includes(room.name) &&
           // and there's a room controller to claim
