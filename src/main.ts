@@ -74,6 +74,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
   const energyAvailable = Game.spawns.Spawn1.room.energyAvailable
   // Generate some creeps
+  // TODO : Smarter cost detection
+  minimumCost = 300
   if (
     Game.spawns.Spawn1.spawning === null &&
     (creepCounts.Miner === 0 ||
