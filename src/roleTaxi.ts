@@ -18,9 +18,10 @@ export const assignTaxis = (taxi: Creep) => {
   // Calculate the range; for the current room we can use pos.getRangeTo()
   // but for other rooms we need Game.map.getRoomLinearDistance() * 50
   const rangeBetweenCreepsMultiRoom = (a: Creep, b: Creep) =>
-    a.room.name === b.room.name
+    a.pos.findPathTo(b.pos).length
+  /*a.room.name === b.room.name
       ? a.pos.getRangeTo(b.pos)
-      : 50 * Game.map.getRoomLinearDistance(a.room.name, b.room.name)
+      : 50 * Game.map.getRoomLinearDistance(a.room.name, b.room.name)*/
   // Sort by closest creep across multiple rooms
   creepsNeedingTow.sort(
     (a, b) =>
