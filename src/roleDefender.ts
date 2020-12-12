@@ -14,7 +14,8 @@ export const roleDefender = {
       if (creep.memory.state === "THINK") {
         // we need a home base room (a miner to guard)
         const allMiners = Array.from(Object.values(Game.creeps)).filter(
-          (creep) => creep.memory.role === "Miner"
+          (creep) =>
+            creep.memory.role === "Miner" || creep.memory.role === "MiniMiner"
         )
 
         if (allMiners.length > 0) {
@@ -27,6 +28,10 @@ export const roleDefender = {
           console.log(
             `${creep.name} assigned to destination creep ${myMiner.name} at ${myMiner.pos.x},${myMiner.pos.y} in ${myMiner.room.name}`
           )
+        } else {
+          // Wait, we have no miners at all? That's bad...
+          // STATE TRANSITION: THINK --> GUARD
+          creep.memory.state = "GUARD"
         }
       }
       if (creep.memory.state === "TRANSIT") {
