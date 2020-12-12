@@ -213,7 +213,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
             spawnResult = spawnCreep("Upgrader")
           } else if (
             creepCounts.Builder < creepsPerRoom / 2 &&
-            constructionSiteCount > 0 &&
             creepCosts.Builder <= energyAvailable
           ) {
             spawnResult = spawnCreep("Builder")
