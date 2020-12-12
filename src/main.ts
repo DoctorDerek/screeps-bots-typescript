@@ -189,6 +189,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
             creepCounts.Taxi < creepCounts.Miner &&
             creepCosts.Taxi <= energyAvailable
           ) {
+            // Spawn a Taxi for every Miner
             spawnResult = spawnCreep("Taxi")
           } else if (
             creepCounts.Miner < creepsPerRoom * 2 &&
@@ -198,11 +199,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
             // Spawn twice as many miners as we should per-room
             // until we hit mineable positions (the max miners)
             spawnResult = spawnCreep("Miner")
-          } else if (
-            creepCounts.Taxi < creepsPerRoom &&
-            creepCosts.Taxi <= energyAvailable
-          ) {
-            spawnResult = spawnCreep("Taxi")
           } else if (
             creepCounts.Claim < creepsPerRoom &&
             creepCounts.Claim < roomsWithoutSpawns &&
