@@ -230,8 +230,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
           } else if (
             creepsPerRoom > 4 &&
             creepCounts.Defender < creepsPerRoom / 2 &&
-            creepCosts.Defender <= energyAvailable
+            creepCosts.Defender <= energyAvailable &&
+            Game.spawns.Spawn1.room.controller &&
+            !Game.spawns.Spawn1.room.controller.safeMode
           ) {
+            // Don't spawn a Defender if we're in safe mode
             spawnResult = spawnCreep("Defender")
           }
         }
