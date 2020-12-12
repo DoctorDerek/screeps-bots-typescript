@@ -66,6 +66,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
       (creep) => creep.memory.role === role
     ).length
   }
+  // Add mini creeps to their correct creep count
+  creepCounts.Miner += creepCounts.MiniMiner
+  creepCounts.Taxi += creepCounts.MiniTaxi
   const DEBUG = false
   DEBUG &&
     Array.from(Object.entries(creepCosts)).forEach(([role, cost]) =>
@@ -163,8 +166,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
         ) {
           spawnResult = spawnCreep("Defender")
         } else {
-          creepCounts.Miner += creepCounts.MiniMiner
-          creepCounts.Taxi += creepCounts.MiniTaxi
           if (
             creepCounts.Miner === 0 &&
             creepCosts.MiniMiner <= energyAvailable
