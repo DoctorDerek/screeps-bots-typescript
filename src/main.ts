@@ -217,11 +217,13 @@ export const loop = ErrorMapper.wrapLoop(() => {
           ) {
             spawnResult = spawnCreep("Builder")
           } else if (
+            creepsPerRoom > 2 &&
             creepCounts.Eye < creepsPerRoom / 2 &&
             creepCosts.Eye <= energyAvailable
           ) {
             spawnResult = spawnCreep("Eye")
           } else if (
+            creepsPerRoom > 4 &&
             creepCounts.Defender < creepsPerRoom / 2 &&
             creepCosts.Defender <= energyAvailable
           ) {
