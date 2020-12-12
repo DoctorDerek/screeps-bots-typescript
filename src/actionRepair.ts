@@ -15,7 +15,7 @@ export const actionRepair = (creep: Creep) => {
   targetRepairSite = allRepairSites[0]
 
   if (targetRepairSite) {
-    creep.say("🔧Repair🔧")
+    creep.say("🔧REPAIR🔧")
     // There is a repair site somewhere for us to work on
     const repairResult = creep.repair(targetRepairSite)
     switch (repairResult) {

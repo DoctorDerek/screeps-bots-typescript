@@ -14,6 +14,6 @@ export const actionRepairNearby = (creep: Creep) => {
     if (repairResult !== OK) {
       console.log(`${creep.name} had repair error: ${repairResult}`)
     }
-    creep.say("🔧Repair🔧")
+    creep.say("🔧Nearby🔧")
   }
 }
