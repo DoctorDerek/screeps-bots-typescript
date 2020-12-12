@@ -159,7 +159,10 @@ export const actionTaxi = (taxi: Creep) => {
     },
   })
   const taxiIsOnEdge =
-    taxi.pos.x > 0 && taxi.pos.x < 49 && taxi.pos.y > 0 && taxi.pos.y < 49
+    taxi.pos.x === 0 ||
+    taxi.pos.x === 49 ||
+    taxi.pos.y === 0 ||
+    taxi.pos.y === 49
   if (target && target.memory.taxiDriver === taxi.name) {
     // This taxi is the assigned driver for that creep, let's go tow
     DEBUG && console.log(`${taxi.name} is trying to tow ${target.name}`)
@@ -168,7 +171,7 @@ export const actionTaxi = (taxi: Creep) => {
     const pullResult = taxi.pull(target)
 
     // normal code (not on edges)
-    if (taxiIsOnEdge) {
+    if (!taxiIsOnEdge) {
       // we're not on an edge, so go pickup our ride
       if (pullResult === ERR_NOT_IN_RANGE) {
         taxi.moveTo(target) // pickup ride
@@ -243,7 +246,7 @@ export const actionTaxi = (taxi: Creep) => {
     } else {
       // There's a chance we're transiting between rooms
       console.log(
-        `${taxi.name} has taxiDriver in memory of ${taxi.memory.taxiDriver}`
+        `${taxi.name} couldn't find a target to tow. It has taxiDriver in memory of ${taxi.memory.taxiDriver}. Are we transiting between rooms?`
       )
     }
   }
