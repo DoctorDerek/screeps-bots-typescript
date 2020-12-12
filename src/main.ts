@@ -164,7 +164,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
           Game.spawns.Spawn1.room.find(FIND_HOSTILE_CREEPS).length > 0 &&
           creepCosts.Defender <= energyAvailable
         ) {
+          // There's a hostile in the Spawn's room!
           spawnResult = spawnCreep("Defender")
+          // Spawn a Defender and turn on Safe Mode
+          Game.spawns.Spawn1.room.controller &&
+            Game.spawns.Spawn1.room.controller.safeModeAvailable &&
+            Game.spawns.Spawn1.room.controller.activateSafeMode()
         } else {
           if (
             creepCounts.Miner === 0 &&
